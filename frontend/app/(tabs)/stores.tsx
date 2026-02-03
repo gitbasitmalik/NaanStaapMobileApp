@@ -14,8 +14,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "axios";
-import { useTheme } from "../theme/ThemeContext";
-import { lightHaptic, mediumHaptic } from "../utils/haptics";
+import { useTheme } from "../../theme/ThemeContext";
+import { lightHaptic, mediumHaptic } from "../../utils/haptics";
 
 const BRAND_PURPLE = "#6B2C5F";
 const BRAND_GOLD = "#D4A84B";

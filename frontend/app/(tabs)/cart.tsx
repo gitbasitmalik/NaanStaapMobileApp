@@ -13,24 +13,24 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useCartStore } from "../store/cartStore";
+import { useCartStore } from "../../store/cartStore";
 import axios from "axios";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme } from "../../theme/ThemeContext";
 import {
   AnimatedButton,
   FadeInView,
   SlideInView,
   ScaleInView,
   BounceView,
-} from "../components/AnimatedComponents";
-import { EmptyState, SuccessAnimation } from "../components/EmptyState";
+} from "../../components/AnimatedComponents";
+import { EmptyState, SuccessAnimation } from "../../components/EmptyState";
 import {
   lightHaptic,
   mediumHaptic,
   successHaptic,
   errorHaptic,
   removeItemHaptic,
-} from "../utils/haptics";
+} from "../../utils/haptics";
 
 const BRAND_PURPLE = "#6B2C5F";
 const BRAND_GOLD = "#D4A84B";

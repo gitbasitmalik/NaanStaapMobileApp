@@ -16,15 +16,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import axios from "axios";
-import { useFavoritesStore } from "../store/favoritesStore";
-import { useTheme } from "../theme/ThemeContext";
+import { useFavoritesStore } from "../../store/favoritesStore";
+import { useAuthStore } from "../../store/authStore";
+import { useTheme } from "../../theme/ThemeContext";
 import {
   AnimatedButton,
   FadeInView,
   SlideInView,
-} from "../components/AnimatedComponents";
-import { lightHaptic } from "../utils/haptics";
+} from "../../components/AnimatedComponents";
+import { lightHaptic } from "../../utils/haptics";
 
 const BRAND_PURPLE = "#6B2C5F";
 const BRAND_GOLD = "#D4A84B";
@@ -38,7 +40,9 @@ interface Store {
 
 export default function MoreScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { colors, isDark, toggleTheme } = useTheme();
+  const { user, isAuthenticated } = useAuthStore();
   const [email, setEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
@@ -75,8 +79,8 @@ export default function MoreScreen() {
     try {
       const response = await axios.get(`${API_URL}/api/stores`);
       setStores(response.data);
-    } catch (error) {
-      console.error("Error fetching stores:", error);
+    } catch {
+      console.error("Error fetching stores");
     }
   };
 
@@ -120,7 +124,7 @@ export default function MoreScreen() {
         message: "",
       });
       setShowContactForm(false);
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to send message. Please try again.");
     } finally {
       setSubmitting(false);
@@ -162,7 +166,7 @@ export default function MoreScreen() {
         special_requests: "",
       });
       setShowBookingForm(false);
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to book table. Please try again.");
     } finally {
       setBookingSubmitting(false);
@@ -170,6 +174,37 @@ export default function MoreScreen() {
   };
 
   const menuItems = [
+    // Account section
+    {
+      icon: isAuthenticated ? "person" : "person-outline",
+      title: isAuthenticated ? user?.name || "My Profile" : "Sign In",
+      subtitle: isAuthenticated ? "View your profile" : "Sign in or create account",
+      onPress: () => {
+        lightHaptic();
+        router.push(isAuthenticated ? "/profile" : "/auth/login");
+      },
+      color: BRAND_PURPLE,
+    },
+    {
+      icon: "receipt-outline",
+      title: "Order History",
+      subtitle: "View your past orders",
+      onPress: () => {
+        lightHaptic();
+        router.push("/orders");
+      },
+      color: "#FF6B35",
+    },
+    {
+      icon: "gift-outline",
+      title: "Loyalty Rewards",
+      subtitle: isAuthenticated ? `${user?.loyalty_points || 0} points` : "Earn points with orders",
+      onPress: () => {
+        lightHaptic();
+        router.push("/loyalty");
+      },
+      color: BRAND_GOLD,
+    },
     {
       icon: "calendar-outline",
       title: "Book a Table",
@@ -398,7 +433,7 @@ export default function MoreScreen() {
             </Text>
             <Text style={[styles.aboutText, { color: colors.textMuted }]}>
               Pull up to your nearest Naan Staap and vibe with the flavours of
-              South Asia. Thanks for choosing us — can't wait to have you back
+              South Asia. Thanks for choosing us — cannot wait to have you back
               for more!
             </Text>
             <View style={styles.halalBadge}>

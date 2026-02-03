@@ -9,6 +9,7 @@ NaanStaap is a full-stack mobile application that allows users to discover nearb
 ## Tech Stack
 
 ### Frontend
+
 - **React Native** with **Expo**
 - **TypeScript**
 - **React Native Maps** for location-based restaurant discovery
@@ -16,10 +17,10 @@ NaanStaap is a full-stack mobile application that allows users to discover nearb
 - **AsyncStorage** for local data persistence
 
 ### Backend
-- **FastAPI** (Python)
+
+- **Express.js** (Node.js)
 - **MongoDB** for database
-- **JWT** for authentication
-- **Uvicorn** as ASGI server
+- **UUID** for unique identifiers
 
 ## Features
 
@@ -36,7 +37,6 @@ NaanStaap is a full-stack mobile application that allows users to discover nearb
 ### Prerequisites
 
 - Node.js (v18+)
-- Python (v3.10+)
 - MongoDB
 - Expo CLI
 
@@ -44,21 +44,27 @@ NaanStaap is a full-stack mobile application that allows users to discover nearb
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+npm install
 ```
 
 Create a `.env` file in the backend folder:
 
 ```env
-MONGODB_URI=your_mongodb_connection_string
+MONGO_URL=your_mongodb_connection_string
+DB_NAME=naanstaap
+PORT=
 ```
 
 Start the server:
 
 ```bash
-uvicorn server:app --host 0.0.0.0 --port 8000
+npm start
+```
+
+For development with auto-reload:
+
+```bash
+npm run dev
 ```
 
 ### Frontend Setup
@@ -82,18 +88,23 @@ npx expo start
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/` | GET | Health check |
-| `/api/menu/categories` | GET | Get menu categories |
-| `/api/menu/items` | GET | Get menu items |
-| `/api/menu/items/popular` | GET | Get popular items |
-| `/api/stores` | GET | Get store locations |
-| `/api/chai` | GET | Get chai varieties |
-| `/signup` | POST | User registration |
-| `/login` | POST | User login |
-| `/restaurants` | GET | Get nearby restaurants |
-| `/orders` | POST | Place an order |
+| Endpoint                    | Method | Description             |
+| --------------------------- | ------ | ----------------------- |
+| `/api/`                     | GET    | Health check            |
+| `/api/menu/categories`      | GET    | Get menu categories     |
+| `/api/menu/items`           | GET    | Get menu items          |
+| `/api/menu/items/popular`   | GET    | Get popular items       |
+| `/api/menu/search`          | GET    | Search menu items       |
+| `/api/stores`               | GET    | Get store locations     |
+| `/api/chai`                 | GET    | Get chai varieties      |
+| `/api/deals`                | GET    | Get active deals        |
+| `/api/cart/add`             | POST   | Add item to cart        |
+| `/api/cart/:id`             | GET    | Get cart                |
+| `/api/orders`               | POST   | Place an order          |
+| `/api/bookings`             | POST   | Make a table booking    |
+| `/api/favorites`            | POST   | Add to favorites        |
+| `/api/newsletter/subscribe` | POST   | Subscribe to newsletter |
+| `/api/contact`              | POST   | Submit contact form     |
 
 ## Project Structure
 
@@ -104,11 +115,20 @@ NaanStaapApp/
 │   ├── components/    # Reusable components
 │   ├── assets/        # Images and fonts
 │   └── .env           # Environment variables
-├── backend/           # FastAPI server
-│   ├── server.py      # Main API server
-│   ├── venv/          # Python virtual environment
+├── backend/           # Express.js server
+│   ├── server.js      # Main API server
+│   ├── package.json   # Node.js dependencies
 │   └── .env           # Environment variables
+├── backend_test.js    # API test suite
 └── README.md
+```
+
+## Testing
+
+Run the API tests:
+
+```bash
+node backend_test.js
 ```
 
 ## Author

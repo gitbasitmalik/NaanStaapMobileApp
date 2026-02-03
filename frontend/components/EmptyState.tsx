@@ -1,16 +1,34 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Easing,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../theme/ThemeContext";
+
+const BRAND_PURPLE = "#6B2C5F";
 
 interface EmptyStateProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   message: string;
   action?: React.ReactNode;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
-export function EmptyState({ icon, title, message, action }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  message,
+  action,
+  actionLabel,
+  onAction,
+}: EmptyStateProps) {
   const { colors } = useTheme();
   const bounceAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -63,6 +81,11 @@ export function EmptyState({ icon, title, message, action }: EmptyStateProps) {
         {message}
       </Text>
       {action && <View style={styles.actionContainer}>{action}</View>}
+      {actionLabel && onAction && (
+        <TouchableOpacity style={styles.actionButton} onPress={onAction}>
+          <Text style={styles.actionButtonText}>{actionLabel}</Text>
+        </TouchableOpacity>
+      )}
     </Animated.View>
   );
 }
@@ -226,6 +249,18 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     marginTop: 24,
+  },
+  actionButton: {
+    marginTop: 24,
+    backgroundColor: BRAND_PURPLE,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+  },
+  actionButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   loadingContainer: {
     justifyContent: "center",

@@ -13,16 +13,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import axios from "axios";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme } from "../../theme/ThemeContext";
 import {
   AnimatedButton,
   FadeInView,
   SlideInView,
   ScaleInView,
   PulseView,
-} from "../components/AnimatedComponents";
-import { HomeScreenSkeleton } from "../components/Skeleton";
-import { lightHaptic, mediumHaptic } from "../utils/haptics";
+} from "../../components/AnimatedComponents";
+import { HomeScreenSkeleton } from "../../components/Skeleton";
+import { lightHaptic, mediumHaptic } from "../../utils/haptics";
 
 const { width } = Dimensions.get("window");
 const BRAND_PURPLE = "#6B2C5F";

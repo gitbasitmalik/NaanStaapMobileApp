@@ -12,9 +12,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "axios";
-import { useCartStore } from "../store/cartStore";
-import { useTheme } from "../theme/ThemeContext";
-import { addToCartHaptic } from "../utils/haptics";
+import { useCartStore } from "../../store/cartStore";
+import { useTheme } from "../../theme/ThemeContext";
+import { addToCartHaptic } from "../../utils/haptics";
 
 const BRAND_PURPLE = "#6B2C5F";
 const BRAND_GOLD = "#D4A84B";

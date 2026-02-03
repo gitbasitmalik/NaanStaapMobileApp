@@ -15,10 +15,10 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "axios";
-import { useCartStore } from "../store/cartStore";
-import { useFavoritesStore } from "../store/favoritesStore";
-import { useTheme } from "../theme/ThemeContext";
-import { addToCartHaptic, lightHaptic, mediumHaptic } from "../utils/haptics";
+import { useCartStore } from "../../store/cartStore";
+import { useFavoritesStore } from "../../store/favoritesStore";
+import { useTheme } from "../../theme/ThemeContext";
+import { addToCartHaptic, lightHaptic, mediumHaptic } from "../../utils/haptics";
 
 const { width } = Dimensions.get("window");
 const BRAND_PURPLE = "#6B2C5F";
