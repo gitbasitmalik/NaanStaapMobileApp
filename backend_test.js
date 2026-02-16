@@ -22,7 +22,7 @@ const getBackendUrl = () => {
   } catch (e) {
     console.log(`Error reading frontend .env: ${e.message}`);
   }
-  return process.env.BACKEND_URL || "http://localhost:8001";
+  return process.env.BACKEND_URL || "http://localhost:8005";
 };
 
 const BASE_URL = getBackendUrl();

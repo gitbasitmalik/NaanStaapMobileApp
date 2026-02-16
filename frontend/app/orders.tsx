@@ -17,6 +17,7 @@ import { useOrdersStore } from "../store/ordersStore";
 import { useAuthStore } from "../store/authStore";
 import { FadeInView, SlideInView } from "../components/AnimatedComponents";
 import { EmptyState } from "../components/EmptyState";
+import { ReviewModal } from "../components/ReviewModal";
 import { lightHaptic, successHaptic } from "../utils/haptics";
 
 const BRAND_PURPLE = "#6B2C5F";
@@ -39,12 +40,21 @@ export default function OrdersScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const { isAuthenticated } = useAuthStore();
-  const { orders, summary, pagination, isLoading, fetchOrders, reorder } =
-    useOrdersStore();
+  const {
+    orders,
+    summary,
+    pagination,
+    isLoading,
+    fetchOrders,
+    reorder,
+    submitReview,
+  } = useOrdersStore();
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewingOrder, setReviewingOrder] = useState<any>(null);
 
   const filters = [
     { key: "all", label: "All" },
@@ -258,7 +268,8 @@ export default function OrdersScreen() {
                   style={[styles.actionButton, { borderColor: BRAND_GOLD }]}
                   onPress={() => {
                     lightHaptic();
-                    Alert.alert("Review", "Review feature coming soon!");
+                    setReviewingOrder(order);
+                    setShowReviewModal(true);
                   }}
                 >
                   <Ionicons name="star-outline" size={16} color={BRAND_GOLD} />
@@ -404,6 +415,24 @@ export default function OrdersScreen() {
           onEndReachedThreshold={0.5}
         />
       )}
+
+      {/* Review Modal */}
+      <ReviewModal
+        visible={showReviewModal}
+        onClose={() => {
+          setShowReviewModal(false);
+          setReviewingOrder(null);
+        }}
+        onSubmit={async (review) => {
+          if (!reviewingOrder) return false;
+          const success = await submitReview(reviewingOrder.id, review);
+          if (success) {
+            loadOrders(); // Refresh to update is_reviewed status
+          }
+          return success;
+        }}
+        orderType={reviewingOrder?.order_type}
+      />
     </View>
   );
 }

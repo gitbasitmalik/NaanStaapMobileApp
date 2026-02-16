@@ -178,7 +178,9 @@ export default function MoreScreen() {
     {
       icon: isAuthenticated ? "person" : "person-outline",
       title: isAuthenticated ? user?.name || "My Profile" : "Sign In",
-      subtitle: isAuthenticated ? "View your profile" : "Sign in or create account",
+      subtitle: isAuthenticated
+        ? "View your profile"
+        : "Sign in or create account",
       onPress: () => {
         lightHaptic();
         router.push(isAuthenticated ? "/profile" : "/auth/login");
@@ -198,7 +200,9 @@ export default function MoreScreen() {
     {
       icon: "gift-outline",
       title: "Loyalty Rewards",
-      subtitle: isAuthenticated ? `${user?.loyalty_points || 0} points` : "Earn points with orders",
+      subtitle: isAuthenticated
+        ? `${user?.loyalty_points || 0} points`
+        : "Earn points with orders",
       onPress: () => {
         lightHaptic();
         router.push("/loyalty");
@@ -213,6 +217,16 @@ export default function MoreScreen() {
       color: "#28A745",
     },
     {
+      icon: "location-outline",
+      title: "My Addresses",
+      subtitle: "Manage delivery addresses",
+      onPress: () => {
+        lightHaptic();
+        router.push("/addresses");
+      },
+      color: "#3498DB",
+    },
+    {
       icon: "heart-outline",
       title: "My Favorites",
       subtitle: `${favorites.length} items saved`,
@@ -223,7 +237,10 @@ export default function MoreScreen() {
       icon: "pricetag-outline",
       title: "Deals & Offers",
       subtitle: "View current promotions",
-      onPress: () => Linking.openURL("https://naanstaap.co.uk"),
+      onPress: () => {
+        lightHaptic();
+        router.push("/deals");
+      },
       color: "#FF6B35",
     },
     {

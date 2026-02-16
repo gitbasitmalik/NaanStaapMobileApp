@@ -1,50 +1,150 @@
-# Welcome to your Expo app 👋
+# NaanStaap — Frontend 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native mobile app built with **Expo** and **TypeScript**.
 
-## Get started
+---
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Quick Start
 
 ```bash
-npm run reset-project
+# 1. Install dependencies
+npm install
+
+# 2. Create environment file
+cp .env.example .env
+# Edit .env and set your backend URL
+
+# 3. Start the app
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Environment Variables
 
-To learn more about developing your project with Expo, look at the following resources:
+Create a `.env` file in this directory:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```env
+EXPO_PUBLIC_BACKEND_URL=http://<YOUR_LOCAL_IP>:8000
+```
 
-## Join the community
+> ⚠️ Use your machine's **local IP address**, not `localhost`, so your phone can connect.
+>
+> ```bash
+> # macOS — find your IP
+> ipconfig getifaddr en0
+> ```
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Run Commands
+
+| Command                    | Description                          |
+| -------------------------- | ------------------------------------ |
+| `npx expo start`           | Start dev server (QR code for phone) |
+| `npx expo start --ios`     | Open in iOS Simulator                |
+| `npx expo start --android` | Open in Android Emulator             |
+| `npx expo start --web`     | Open in browser                      |
+| `npx expo start --clear`   | Start with cache cleared             |
+| `npm run lint`             | Run ESLint                           |
+
+---
+
+## Project Structure
+
+```
+frontend/
+├── app/                        # Screens (Expo Router file-based routing)
+│   ├── _layout.tsx             # Root layout
+│   ├── (tabs)/                 # Bottom tab screens
+│   │   ├── index.tsx           # Home
+│   │   ├── menu.tsx            # Menu browsing
+│   │   ├── cart.tsx            # Shopping cart & checkout
+│   │   ├── chai.tsx            # Chai collection
+│   │   ├── stores.tsx          # Store locator
+│   │   └── more.tsx            # Settings & links
+│   ├── auth/                   # Authentication screens
+│   │   ├── login.tsx
+│   │   └── register.tsx
+│   ├── addresses.tsx           # Address management
+│   ├── deals.tsx               # Deals & promo codes
+│   ├── loyalty.tsx             # Loyalty rewards & referrals
+│   ├── orders.tsx              # Order history & reviews
+│   └── profile.tsx             # User profile
+│
+├── components/                 # Reusable UI components
+│   ├── AnimatedComponents.tsx  # Animated wrappers (FadeIn, SlideIn, etc.)
+│   ├── Cards.tsx               # Card components
+│   ├── EmptyState.tsx          # Empty state placeholder
+│   ├── ReviewModal.tsx         # Order review modal
+│   ├── Skeleton.tsx            # Loading skeletons
+│   └── Toast.tsx               # Toast notifications
+│
+├── store/                      # Zustand state management
+│   ├── authStore.ts            # Auth: login, register, profile
+│   ├── cartStore.ts            # Cart: items, totals
+│   ├── ordersStore.ts          # Orders: history, reorder, reviews
+│   ├── loyaltyStore.ts         # Loyalty: points, rewards, referrals
+│   ├── addressStore.ts         # Addresses: CRUD, default
+│   ├── dealsStore.ts           # Deals: fetch offers
+│   ├── favoritesStore.ts       # Favorites: save items locally
+│   ├── notificationsStore.ts   # Notifications: local management
+│   └── recommendationsStore.ts # Recommendations: personalised items
+│
+├── services/
+│   └── api.ts                  # Axios client, all API functions, types
+│
+├── theme/
+│   └── ThemeContext.tsx         # Light/dark theme provider
+│
+├── utils/
+│   └── haptics.ts              # Haptic feedback helpers
+│
+├── assets/                     # Fonts & images
+├── app.json                    # Expo config
+├── tsconfig.json               # TypeScript config
+└── package.json
+```
+
+---
+
+## State Management
+
+The app uses **Zustand** for state. Each store is independent and can be imported into any component:
+
+```tsx
+import { useAuthStore } from "../store/authStore";
+import { useCartStore } from "../store/cartStore";
+
+// Inside a component
+const { user, isAuthenticated } = useAuthStore();
+const { items, addItem } = useCartStore();
+```
+
+---
+
+## Key Libraries
+
+| Library                       | Purpose                     |
+| ----------------------------- | --------------------------- |
+| `expo-router`                 | File-based navigation       |
+| `zustand`                     | State management            |
+| `axios`                       | HTTP client for API calls   |
+| `react-native-maps`           | Map views for store locator |
+| `react-native-reanimated`     | Smooth animations           |
+| `expo-haptics`                | Tactile feedback            |
+| `expo-clipboard`              | Copy promo codes            |
+| `expo-image`                  | Optimised image loading     |
+| `@react-native-async-storage` | Local data persistence      |
+
+---
+
+## Troubleshooting
+
+| Problem                  | Solution                                                            |
+| ------------------------ | ------------------------------------------------------------------- |
+| Can't connect to backend | Check `EXPO_PUBLIC_BACKEND_URL` uses your local IP, not `localhost` |
+| Metro bundler errors     | `npx expo start --clear`                                            |
+| TypeScript route errors  | Routes auto-generate types on dev server start — restart Expo       |
+| Blank screen on launch   | Check terminal for errors, ensure backend is running                |
+| Haptics not working      | Haptics only work on physical devices, not simulators               |

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://10.2.54.74:8005';
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = '@naanstaap_access_token';
