@@ -4,13 +4,20 @@ import {
   Animated,
   ViewStyle,
   TouchableOpacityProps,
+  StyleProp,
   Easing,
 } from "react-native";
 import { lightHaptic } from "../utils/haptics";
 
+// StyleSheet.flatten was removed from React Native; merge style arrays by hand.
+const flattenStyle = (style: StyleProp<ViewStyle>): ViewStyle => {
+  if (Array.isArray(style)) return Object.assign({}, ...style.map(flattenStyle));
+  return style && typeof style === "object" ? (style as ViewStyle) : {};
+};
+
 interface AnimatedButtonProps extends TouchableOpacityProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   scaleValue?: number;
   haptic?: boolean;
 }
@@ -48,15 +55,70 @@ export function AnimatedButton({
     onPress?.(e);
   };
 
+  // Sizing and outer spacing belong on the touchable so `flex: 1`, widths and
+  // margins behave as if the style were on the button itself.
+  const {
+    flex,
+    flexGrow,
+    flexShrink,
+    flexBasis,
+    width,
+    minWidth,
+    maxWidth,
+    alignSelf,
+    margin,
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight,
+    marginHorizontal,
+    marginVertical,
+    position,
+    top,
+    left,
+    right,
+    bottom,
+    ...innerStyle
+  } = flattenStyle(style);
+  const outerStyle = {
+    flex,
+    flexGrow,
+    flexShrink,
+    flexBasis,
+    width,
+    minWidth,
+    maxWidth,
+    alignSelf,
+    margin,
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight,
+    marginHorizontal,
+    marginVertical,
+    position,
+    top,
+    left,
+    right,
+    bottom,
+  };
+
   return (
     <TouchableOpacity
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}
       activeOpacity={1}
+      style={outerStyle}
       {...props}
     >
-      <Animated.View style={[style, { transform: [{ scale: scaleAnim }] }]}>
+      <Animated.View
+        style={[
+          innerStyle,
+          width != null || flex != null || flexGrow != null ? { width: "100%" } : null,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
         {children}
       </Animated.View>
     </TouchableOpacity>
@@ -65,7 +127,7 @@ export function AnimatedButton({
 
 interface FadeInViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   delay?: number;
   duration?: number;
 }
@@ -115,7 +177,7 @@ export function FadeInView({
 
 interface SlideInViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   direction?: "left" | "right" | "top" | "bottom";
   delay?: number;
   duration?: number;
@@ -180,7 +242,7 @@ export function SlideInView({
 
 interface ScaleInViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   delay?: number;
   duration?: number;
 }
@@ -229,7 +291,7 @@ export function ScaleInView({
 
 interface PulseViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   active?: boolean;
 }
 
@@ -268,7 +330,7 @@ export function PulseView({ children, style, active = true }: PulseViewProps) {
 
 interface BounceViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   trigger?: any;
 }
 
@@ -302,7 +364,7 @@ export function BounceView({ children, style, trigger }: BounceViewProps) {
 
 interface ShakeViewProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   trigger?: any;
 }
 

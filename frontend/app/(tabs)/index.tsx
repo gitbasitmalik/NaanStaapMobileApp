@@ -1,119 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Image,
+  ImageBackground,
   Dimensions,
   Linking,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import axios from "axios";
-import { useTheme } from "../../theme/ThemeContext";
-import {
-  AnimatedButton,
-  FadeInView,
-  SlideInView,
-  ScaleInView,
-  PulseView,
-} from "../../components/AnimatedComponents";
+import { useTheme, BRAND, FONTS } from "../../theme/ThemeContext";
+import { FadeInView, SlideInView, AnimatedButton } from "../../components/AnimatedComponents";
 import { HomeScreenSkeleton } from "../../components/Skeleton";
-import { lightHaptic, mediumHaptic } from "../../utils/haptics";
+import { BrandButton, Logo, SectionHeading, formatPrice } from "../../components/ui";
+import { menuAPI, dealsAPI, MenuItem, Deal } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
+import { SITE } from "../../data/siteContent";
+import { lightHaptic } from "../../utils/haptics";
 
 const { width } = Dimensions.get("window");
-const BRAND_PURPLE = "#6B2C5F";
-const BRAND_GOLD = "#D4A84B";
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number | null;
-  category: string;
-  image_url: string;
-  is_vegetarian: boolean;
-  is_popular: boolean;
-}
+type IconName = keyof typeof Ionicons.glyphMap;
 
-interface MenuCategory {
-  id: string;
-  name: string;
-  description: string;
-  image_url: string;
-  item_count: number;
-}
-
-interface Deal {
-  id: string;
-  title: string;
-  description: string;
-  discount_percentage: number | null;
-  discount_amount: number | null;
-  code: string | null;
-  image_url: string;
-  valid_until: string;
-}
+const QUICK_ACTIONS: { icon: IconName; label: string; route: string }[] = [
+  { icon: "calendar-outline", label: "Book a table", route: "/book-table" },
+  { icon: "gift-outline", label: "Rewards", route: "/loyalty" },
+  { icon: "receipt-outline", label: "My orders", route: "/orders" },
+  { icon: "restaurant-outline", label: "Catering", route: "/info/catering" },
+];
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
+  const { user, isAuthenticated } = useAuthStore();
   const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
-  const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const [popularRes, categoriesRes, dealsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/menu/items/popular`),
-        axios.get(`${API_URL}/api/menu/categories`),
-        axios.get(`${API_URL}/api/deals`),
+      const [popularRes, dealsRes] = await Promise.all([
+        menuAPI.getPopularItems(),
+        dealsAPI.getAll(),
       ]);
       setPopularItems(popularRes.data);
-      setCategories(categoriesRes.data);
       setDeals(dealsRes.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      setFailed(false);
+    } catch {
+      setFailed(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
-  const onRefresh = () => {
-    setRefreshing(true);
+  useEffect(() => {
     fetchData();
-  };
+  }, [fetchData]);
 
-  const openOrderingApp = () => {
-    mediumHaptic();
-    Linking.openURL("https://naanstaap.app4food.co.uk/");
-  };
-
-  const navigateTo = (route: any) => {
+  const go = (route: any) => {
     lightHaptic();
     router.push(route);
   };
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: colors.background, paddingTop: insets.top },
-        ]}
-      >
+      <View style={[styles.flex, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <HomeScreenSkeleton />
       </View>
     );
@@ -121,515 +81,418 @@ export default function HomeScreen() {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.flex, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={BRAND_GOLD}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchData();
+          }}
+          tintColor={BRAND.gold}
         />
       }
     >
-      {/* Hero Section */}
-      <FadeInView style={styles.heroSection}>
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-          }}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-        <View style={styles.heroOverlay}>
-          <ScaleInView style={styles.logoContainer} delay={200}>
-            <Text style={styles.logoText}>NAAN STAAP</Text>
-            <Text style={styles.tagline}>Flavours of South Asia</Text>
-          </ScaleInView>
-          <SlideInView direction="bottom" delay={400}>
-            <PulseView>
-              <AnimatedButton
-                style={styles.orderButton}
-                onPress={openOrderingApp}
-              >
-                <Ionicons name="fast-food" size={20} color="#FFF" />
-                <Text style={styles.orderButtonText}>Order Now</Text>
-              </AnimatedButton>
-            </PulseView>
-          </SlideInView>
-        </View>
-      </FadeInView>
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        <Logo width={118} />
+        <TouchableOpacity
+          style={styles.headerAccount}
+          onPress={() => go(isAuthenticated ? "/profile" : "/auth/login")}
+          accessibilityLabel={isAuthenticated ? "My account" : "Sign in"}
+        >
+          <Ionicons
+            name={isAuthenticated ? "person-circle" : "person-circle-outline"}
+            size={34}
+            color={BRAND.gold}
+          />
+        </TouchableOpacity>
+      </View>
 
-      {/* Quick Actions */}
-      <SlideInView
-        direction="bottom"
-        delay={300}
-        style={[styles.quickActions, { backgroundColor: colors.surface }]}
-      >
-        <AnimatedButton
-          style={styles.quickActionItem}
-          onPress={() => navigateTo("/menu")}
-        >
-          <View
-            style={[styles.quickActionIcon, { backgroundColor: "#E8D5E0" }]}
-          >
-            <Ionicons name="restaurant" size={24} color={BRAND_PURPLE} />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.text }]}>
-            Menu
-          </Text>
-        </AnimatedButton>
-        <AnimatedButton
-          style={styles.quickActionItem}
-          onPress={() => navigateTo("/stores")}
-        >
-          <View
-            style={[styles.quickActionIcon, { backgroundColor: "#FFF3D4" }]}
-          >
-            <Ionicons name="location" size={24} color={BRAND_GOLD} />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.text }]}>
-            Find Store
-          </Text>
-        </AnimatedButton>
-        <AnimatedButton
-          style={styles.quickActionItem}
-          onPress={() => navigateTo("/more")}
-        >
-          <View
-            style={[styles.quickActionIcon, { backgroundColor: "#D4EDDA" }]}
-          >
-            <Ionicons name="calendar" size={24} color="#28A745" />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.text }]}>
-            Book Table
-          </Text>
-        </AnimatedButton>
-        <AnimatedButton
-          style={styles.quickActionItem}
-          onPress={() => navigateTo("/cart")}
-        >
-          <View
-            style={[styles.quickActionIcon, { backgroundColor: "#FFE5E5" }]}
-          >
-            <Ionicons name="cart" size={24} color="#E53935" />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.text }]}>
-            Cart
-          </Text>
-        </AnimatedButton>
-      </SlideInView>
-
-      {/* Deals Section */}
-      {deals.length > 0 && (
-        <FadeInView delay={400} style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Special Deals
+      {/* Hero */}
+      <FadeInView style={styles.heroWrap}>
+        <ImageBackground source={{ uri: SITE.heroImage }} style={styles.hero} imageStyle={styles.heroImage}>
+          <View style={styles.heroOverlay}>
+            <Text style={styles.heroScript}>
+              {isAuthenticated && user?.name ? `Hey ${user.name.split(" ")[0]}!` : "Welcome!"}
             </Text>
-            <View style={styles.dealBadge}>
-              <Ionicons name="pricetag" size={14} color="#FFF" />
-              <Text style={styles.dealBadgeText}>{deals.length} offers</Text>
+            <Text style={styles.heroTitle}>Flavours of{"\n"}South Asia</Text>
+            <Text style={styles.heroText}>{SITE.tagline}</Text>
+            <View style={styles.heroButtons}>
+              <BrandButton title="Order now" icon="bag-handle" onPress={() => go("/menu")} style={styles.heroBtn} />
+              <BrandButton
+                title="Find a store"
+                variant="outline"
+                icon="location"
+                onPress={() => go("/stores")}
+                style={styles.heroBtn}
+              />
             </View>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalScroll}
-          >
-            {deals.map((deal, index) => (
-              <SlideInView key={deal.id} direction="right" delay={index * 100}>
-                <AnimatedButton style={styles.dealCard}>
-                  <Image
-                    source={{ uri: deal.image_url }}
-                    style={styles.dealImage}
-                    resizeMode="cover"
-                  />
-                  <View style={styles.dealOverlay}>
-                    {deal.discount_percentage && (
-                      <View style={styles.discountBadge}>
-                        <Text style={styles.discountText}>
-                          {deal.discount_percentage}% OFF
-                        </Text>
-                      </View>
-                    )}
-                    <Text style={styles.dealTitle}>{deal.title}</Text>
-                    <Text style={styles.dealDescription} numberOfLines={2}>
-                      {deal.description}
-                    </Text>
-                    {deal.code && (
-                      <View style={styles.codeContainer}>
-                        <Text style={styles.codeLabel}>Use code: </Text>
-                        <Text style={styles.codeText}>{deal.code}</Text>
-                      </View>
-                    )}
-                  </View>
-                </AnimatedButton>
-              </SlideInView>
-            ))}
-          </ScrollView>
-        </FadeInView>
+        </ImageBackground>
+      </FadeInView>
+
+      {failed && (
+        <TouchableOpacity
+          style={[styles.offline, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={() => {
+            setLoading(true);
+            fetchData();
+          }}
+        >
+          <Ionicons name="cloud-offline-outline" size={20} color={BRAND.gold} />
+          <Text style={[styles.offlineText, { color: colors.textSecondary }]}>
+            Couldn&apos;t load the latest menu. Tap to retry.
+          </Text>
+        </TouchableOpacity>
       )}
 
-      {/* Popular Items */}
-      <FadeInView delay={500} style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Popular Items
-          </Text>
-          <AnimatedButton onPress={() => navigateTo("/menu")}>
-            <Text style={styles.seeAllText}>See All</Text>
-          </AnimatedButton>
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScroll}
-        >
-          {popularItems.slice(0, 6).map((item, index) => (
-            <SlideInView key={item.id} direction="right" delay={index * 80}>
-              <AnimatedButton
-                style={[
-                  styles.popularCard,
-                  { backgroundColor: colors.surface },
-                ]}
-                onPress={() => navigateTo("/menu")}
-              >
+      {/* Chai / Naan / Street */}
+      <View style={styles.section}>
+        <SectionHeading script="Taste the vibe" title="What we do" />
+        <View style={styles.tiles}>
+          {SITE.featureTiles.map((tile, index) => (
+            <SlideInView key={tile.title} direction="bottom" delay={index * 90} style={styles.tileWrap}>
+              <AnimatedButton style={styles.tile} onPress={() => go(tile.route)}>
                 <Image
-                  source={{ uri: item.image_url }}
-                  style={styles.popularImage}
-                  resizeMode="cover"
+                  source={{ uri: tile.image }}
+                  style={styles.tileImage}
+                  accessibilityLabel={tile.title}
                 />
-                <View style={styles.popularContent}>
-                  <Text
-                    style={[styles.popularName, { color: colors.text }]}
-                    numberOfLines={1}
-                  >
-                    {item.name}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.popularDescription,
-                      { color: colors.textMuted },
-                    ]}
-                    numberOfLines={2}
-                  >
-                    {item.description}
-                  </Text>
-                  {item.price && (
-                    <Text style={styles.popularPrice}>
-                      £{item.price.toFixed(2)}
-                    </Text>
-                  )}
-                </View>
-                {item.is_vegetarian && (
-                  <View style={styles.vegBadge}>
-                    <Ionicons name="leaf" size={12} color="#28A745" />
-                  </View>
-                )}
               </AnimatedButton>
             </SlideInView>
           ))}
-        </ScrollView>
-      </FadeInView>
+        </View>
+      </View>
 
-      {/* Menu Categories */}
-      <FadeInView delay={600} style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Explore Our Menu
-        </Text>
-        <View style={styles.categoriesGrid}>
-          {categories.slice(0, 6).map((category, index) => (
-            <ScaleInView key={category.id} delay={index * 100}>
-              <AnimatedButton
-                style={styles.categoryCard}
-                onPress={() => navigateTo("/menu")}
-              >
-                <Image
-                  source={{ uri: category.image_url }}
-                  style={styles.categoryImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.categoryOverlay}>
-                  <Text style={styles.categoryName}>{category.name}</Text>
-                  <Text style={styles.categoryCount}>
-                    {category.item_count} items
+      {/* Quick actions */}
+      <View style={[styles.quickActions, { backgroundColor: colors.surface }]}>
+        {QUICK_ACTIONS.map((action) => (
+          <AnimatedButton key={action.label} style={styles.quickAction} onPress={() => go(action.route)}>
+            <View style={styles.quickIcon}>
+              <Ionicons name={action.icon} size={22} color={BRAND.gold} />
+            </View>
+            <Text style={[styles.quickLabel, { color: colors.text }]}>{action.label}</Text>
+          </AnimatedButton>
+        ))}
+      </View>
+
+      {/* Deals */}
+      {deals.length > 0 && (
+        <View style={styles.section}>
+          <SectionHeading
+            script="Don't miss out"
+            title="Deals & offers"
+            action="See all"
+            onAction={() => go("/deals")}
+          />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hScroll}>
+            {deals.map((deal) => (
+              <AnimatedButton key={deal.id} style={styles.dealCard} onPress={() => go("/deals")}>
+                <Image source={{ uri: deal.image_url }} style={StyleSheet.absoluteFill} />
+                <View style={styles.dealOverlay}>
+                  {deal.discount_percentage || deal.discount_amount ? (
+                    <View style={styles.dealBadge}>
+                      <Text style={styles.dealBadgeText}>
+                        {deal.discount_percentage
+                          ? `${deal.discount_percentage}% OFF`
+                          : `${formatPrice(deal.discount_amount)} OFF`}
+                      </Text>
+                    </View>
+                  ) : null}
+                  <Text style={styles.dealTitle}>{deal.title}</Text>
+                  <Text style={styles.dealText} numberOfLines={2}>
+                    {deal.description}
                   </Text>
+                  {deal.code && (
+                    <Text style={styles.dealCode}>
+                      Code <Text style={styles.dealCodeValue}>{deal.code}</Text>
+                    </Text>
+                  )}
                 </View>
               </AnimatedButton>
-            </ScaleInView>
-          ))}
+            ))}
+          </ScrollView>
         </View>
-      </FadeInView>
+      )}
 
-      {/* Halal Badge */}
-      <ScaleInView
-        delay={700}
-        style={[styles.halalSection, { backgroundColor: colors.surface }]}
-      >
-        <View style={styles.halalBadge}>
-          <Ionicons name="checkmark-circle" size={24} color={BRAND_GOLD} />
-          <Text style={[styles.halalText, { color: colors.text }]}>
-            100% HALAL Certified
+      {/* Popular */}
+      {popularItems.length > 0 && (
+        <View style={styles.section}>
+          <SectionHeading
+            script="Fan favourites"
+            title="Popular right now"
+            action="Full menu"
+            onAction={() => go("/menu")}
+          />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hScroll}>
+            {popularItems.slice(0, 8).map((item) => (
+              <AnimatedButton
+                key={item.id}
+                style={[styles.popularCard, { backgroundColor: colors.surface }]}
+                onPress={() => go({ pathname: "/menu", params: { item: item.id } })}
+              >
+                <Image source={{ uri: item.image_url }} style={styles.popularImage} />
+                {item.is_vegetarian && (
+                  <View style={styles.vegBadge}>
+                    <Ionicons name="leaf" size={12} color={BRAND.purpleDeep} />
+                  </View>
+                )}
+                <View style={styles.popularBody}>
+                  <Text style={[styles.popularName, { color: colors.text }]} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={[styles.popularDesc, { color: colors.textMuted }]} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                  {item.price != null && <Text style={styles.popularPrice}>{formatPrice(item.price)}</Text>}
+                </View>
+              </AnimatedButton>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Know your cup */}
+      <AnimatedButton style={styles.banner} onPress={() => go("/info/know-your-cup")}>
+        <Ionicons name="cafe" size={34} color={BRAND.purpleDeep} />
+        <View style={styles.flex}>
+          <Text style={styles.bannerTitle}>Know your cup</Text>
+          <Text style={styles.bannerText}>Find your perfect chai — strength, sweetness and spice.</Text>
+        </View>
+        <Ionicons name="arrow-forward" size={22} color={BRAND.purpleDeep} />
+      </AnimatedButton>
+
+      {/* Halal & allergens */}
+      <View style={[styles.halal, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Ionicons name="shield-checkmark" size={26} color={BRAND.lime} />
+        <View style={styles.flex}>
+          <Text style={[styles.halalTitle, { color: colors.text }]}>100% Halal</Text>
+          <Text style={[styles.halalText, { color: colors.textMuted }]}>
+            Allergies? Check our{" "}
+            <Text style={styles.inlineLink} onPress={() => go("/info/allergens")}>
+              allergen guide
+            </Text>{" "}
+            or speak to our team before ordering.
           </Text>
         </View>
-        <Text style={[styles.halalSubtext, { color: colors.textMuted }]}>
-          All our food is prepared according to Islamic dietary guidelines
-        </Text>
-      </ScaleInView>
+      </View>
 
-      {/* Delivery Partners */}
-      <FadeInView delay={800} style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Delivery Partners
+      {/* Franchise */}
+      <View style={[styles.franchise, { backgroundColor: colors.surface }]}>
+        <Text style={styles.franchiseScript}>Become our</Text>
+        <Text style={styles.franchiseTitle}>Franchise Partner</Text>
+        <Text style={[styles.franchiseText, { color: colors.textSecondary }]}>
+          Profitable and consistent growth is the ingredient to achieve our goals.
         </Text>
-        <View style={styles.deliveryPartners}>
-          <AnimatedButton
-            style={styles.deliveryPartner}
-            onPress={() => {
-              mediumHaptic();
-              Linking.openURL("https://deliveroo.co.uk/");
-            }}
-          >
-            <View style={styles.deliveryIcon}>
-              <Ionicons name="bicycle" size={32} color="#00CCBC" />
-            </View>
-            <Text style={[styles.deliveryName, { color: colors.text }]}>
-              Deliveroo
-            </Text>
-          </AnimatedButton>
-          <AnimatedButton
-            style={styles.deliveryPartner}
-            onPress={() => {
-              mediumHaptic();
-              Linking.openURL("https://www.ubereats.com/");
-            }}
-          >
-            <View style={styles.deliveryIcon}>
-              <Ionicons name="car" size={32} color="#000" />
-            </View>
-            <Text style={[styles.deliveryName, { color: colors.text }]}>
-              Uber Eats
-            </Text>
-          </AnimatedButton>
+        <BrandButton
+          title="Find out more"
+          variant="gold"
+          size="sm"
+          onPress={() => go("/info/franchise")}
+          style={styles.franchiseBtn}
+        />
+      </View>
+
+      {/* Delivery partners */}
+      <View style={styles.section}>
+        <SectionHeading title="Delivery partners" />
+        <View style={styles.partners}>
+          {SITE.deliveryPartners.map((partner) => (
+            <AnimatedButton
+              key={partner.name}
+              style={[styles.partner, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={() => Linking.openURL(partner.url)}
+            >
+              <Ionicons name={partner.icon as IconName} size={24} color={BRAND.gold} />
+              <Text style={[styles.partnerName, { color: colors.text }]}>{partner.name}</Text>
+            </AnimatedButton>
+          ))}
         </View>
-      </FadeInView>
+      </View>
 
       {/* Footer */}
-      <FadeInView
-        delay={900}
-        style={[styles.footer, { borderTopColor: colors.border }]}
-      >
-        <Text style={[styles.footerText, { color: colors.textMuted }]}>
-          © 2018-2025 Naan Staap Ltd.
-        </Text>
-        <Text style={[styles.footerSubtext, { color: colors.textMuted }]}>
-          All rights reserved.
-        </Text>
-        <View style={styles.socialLinks}>
-          <AnimatedButton
-            onPress={() => {
-              lightHaptic();
-              Linking.openURL("https://www.facebook.com/NaanStaap");
-            }}
-          >
-            <Ionicons name="logo-facebook" size={28} color="#4267B2" />
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={() => {
-              lightHaptic();
-              Linking.openURL("https://www.instagram.com/naanstaap/");
-            }}
-            style={{ marginLeft: 20 }}
-          >
-            <Ionicons name="logo-instagram" size={28} color="#E1306C" />
-          </AnimatedButton>
+      <View style={[styles.footer, { borderTopColor: colors.border }]}>
+        <Text style={styles.footerScript}>Can&apos;t wait to have you back!</Text>
+        <View style={styles.socials}>
+          {SITE.socials.map((social) => (
+            <TouchableOpacity
+              key={social.name}
+              onPress={() => Linking.openURL(social.url)}
+              style={[styles.social, { borderColor: colors.border }]}
+              accessibilityLabel={social.name}
+            >
+              <Ionicons name={social.icon as IconName} size={22} color={BRAND.gold} />
+            </TouchableOpacity>
+          ))}
         </View>
-      </FadeInView>
+        <Text style={[styles.footerText, { color: colors.textMuted }]}>
+          © 2018–{new Date().getFullYear()} Naan Staap Ltd. All rights reserved.
+        </Text>
+      </View>
     </ScrollView>
   );
 }
 
+const TILE_WIDTH = (width - 40 - 20) / 3;
+
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  loadingContainer: { flex: 1 },
-  heroSection: { height: 280, position: "relative" },
-  heroImage: { width: "100%", height: "100%" },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  logoContainer: { alignItems: "center", marginBottom: 24 },
-  logoText: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#FFF",
-    letterSpacing: 4,
-  },
-  tagline: { fontSize: 16, color: BRAND_GOLD, marginTop: 8, letterSpacing: 2 },
-  orderButton: {
+  flex: { flex: 1 },
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: BRAND_PURPLE,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-    gap: 8,
-  },
-  orderButtonText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
-  quickActions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    marginTop: -20,
-    marginHorizontal: 16,
-    borderRadius: 16,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  quickActionItem: { alignItems: "center" },
-  quickActionIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  quickActionText: { fontSize: 12, fontWeight: "500" },
-  section: { padding: 20 },
-  sectionHeader: {
-    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    backgroundColor: BRAND.purple,
   },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
-  seeAllText: { color: BRAND_GOLD, fontSize: 14, fontWeight: "600" },
-  dealBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#E53935",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
-  },
-  dealBadgeText: { color: "#FFF", fontSize: 12, fontWeight: "600" },
-  horizontalScroll: { paddingRight: 20 },
-  dealCard: {
-    width: 280,
-    height: 160,
-    borderRadius: 12,
-    marginRight: 12,
-    overflow: "hidden",
-  },
-  dealImage: { width: "100%", height: "100%" },
-  dealOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    padding: 16,
+  headerAccount: { padding: 4 },
+  heroWrap: { paddingHorizontal: 16, marginTop: 16 },
+  hero: { height: 300, justifyContent: "flex-end" },
+  heroImage: { borderRadius: 24 },
+  heroOverlay: {
+    flex: 1,
+    borderRadius: 24,
+    backgroundColor: "rgba(58, 38, 64, 0.7)",
+    padding: 22,
     justifyContent: "flex-end",
   },
-  discountBadge: {
+  heroScript: { fontFamily: FONTS.script, fontSize: 28, color: BRAND.orange },
+  heroTitle: { fontSize: 34, lineHeight: 38, fontWeight: "900", color: BRAND.gold },
+  heroText: { color: "rgba(255,255,255,0.9)", fontSize: 14, lineHeight: 20, marginTop: 8 },
+  heroButtons: { flexDirection: "row", gap: 10, marginTop: 16 },
+  heroBtn: { flexGrow: 1, paddingHorizontal: 12 },
+  offline: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  offlineText: { flex: 1, fontSize: 13 },
+  section: { paddingHorizontal: 20, paddingTop: 28 },
+  tiles: { flexDirection: "row", gap: 10 },
+  tileWrap: { width: TILE_WIDTH },
+  tile: { width: TILE_WIDTH, height: TILE_WIDTH * 1.35, borderRadius: 18, overflow: "hidden" },
+  tileImage: { width: "100%", height: "100%" },
+  quickActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 16,
+    marginTop: 24,
+    paddingVertical: 18,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+  },
+  quickAction: { alignItems: "center", width: (width - 52) / 4 },
+  quickIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,215,79,0.12)",
+    marginBottom: 8,
+  },
+  quickLabel: { fontSize: 12, fontWeight: "600", textAlign: "center" },
+  hScroll: { paddingRight: 20, gap: 12 },
+  dealCard: { width: 270, height: 160, borderRadius: 20, overflow: "hidden" },
+  dealOverlay: {
+    flex: 1,
+    padding: 16,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(58, 38, 64, 0.65)",
+  },
+  dealBadge: {
     position: "absolute",
     top: 12,
     right: 12,
-    backgroundColor: "#E53935",
+    backgroundColor: BRAND.orange,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 10,
   },
-  discountText: { color: "#FFF", fontSize: 12, fontWeight: "bold" },
-  dealTitle: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  dealDescription: { color: "#CCC", fontSize: 12, marginBottom: 8 },
-  codeContainer: { flexDirection: "row", alignItems: "center" },
-  codeLabel: { color: "#888", fontSize: 11 },
-  codeText: { color: BRAND_GOLD, fontSize: 12, fontWeight: "bold" },
-  popularCard: {
-    width: 160,
-    borderRadius: 12,
-    marginRight: 12,
-    overflow: "hidden",
-  },
-  popularImage: { width: "100%", height: 100 },
-  popularContent: { padding: 12 },
-  popularName: { fontSize: 14, fontWeight: "600", marginBottom: 4 },
-  popularDescription: { fontSize: 11, marginBottom: 8 },
-  popularPrice: { fontSize: 14, fontWeight: "bold", color: BRAND_GOLD },
+  dealBadgeText: { color: "#FFF", fontSize: 12, fontWeight: "800" },
+  dealTitle: { color: BRAND.gold, fontSize: 17, fontWeight: "800" },
+  dealText: { color: "rgba(255,255,255,0.85)", fontSize: 12, marginTop: 2 },
+  dealCode: { color: "rgba(255,255,255,0.7)", fontSize: 12, marginTop: 6 },
+  dealCodeValue: { color: BRAND.gold, fontWeight: "800", letterSpacing: 1 },
+  popularCard: { width: 168, borderRadius: 18, overflow: "hidden" },
+  popularImage: { width: "100%", height: 110 },
   vegBadge: {
     position: "absolute",
     top: 8,
-    right: 8,
-    backgroundColor: "#FFF",
+    left: 8,
+    backgroundColor: BRAND.lime,
     borderRadius: 10,
     padding: 4,
   },
-  categoriesGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  categoryCard: {
-    width: (width - 52) / 2,
-    height: 120,
-    borderRadius: 12,
-    overflow: "hidden",
-    marginBottom: 12,
-  },
-  categoryImage: { width: "100%", height: "100%" },
-  categoryOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    justifyContent: "flex-end",
-    padding: 12,
-  },
-  categoryName: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
-  categoryCount: { color: BRAND_GOLD, fontSize: 12 },
-  halalSection: {
-    margin: 20,
-    padding: 20,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  halalBadge: {
+  popularBody: { padding: 12 },
+  popularName: { fontSize: 15, fontWeight: "700" },
+  popularDesc: { fontSize: 12, marginTop: 4, minHeight: 32 },
+  popularPrice: { color: BRAND.gold, fontSize: 15, fontWeight: "800", marginTop: 6 },
+  banner: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 8,
+    gap: 14,
+    marginHorizontal: 16,
+    marginTop: 28,
+    padding: 18,
+    borderRadius: 20,
+    backgroundColor: BRAND.gold,
   },
-  halalText: { fontSize: 16, fontWeight: "bold" },
-  halalSubtext: { fontSize: 12, textAlign: "center" },
-  deliveryPartners: { flexDirection: "row", justifyContent: "center", gap: 40 },
-  deliveryPartner: { alignItems: "center" },
-  deliveryIcon: {
-    width: 60,
-    height: 60,
-    backgroundColor: "#FFF",
-    borderRadius: 30,
+  bannerTitle: { fontSize: 18, fontWeight: "900", color: BRAND.purpleDeep },
+  bannerText: { fontSize: 13, marginTop: 2, color: BRAND.purpleDeep },
+  halal: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  halalTitle: { fontSize: 16, fontWeight: "800" },
+  halalText: { fontSize: 13, marginTop: 2, lineHeight: 18 },
+  inlineLink: { color: BRAND.gold, fontWeight: "700" },
+  franchise: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 22,
+    borderRadius: 20,
+    alignItems: "center",
+  },
+  franchiseScript: { fontFamily: FONTS.script, fontSize: 26, color: BRAND.orange },
+  franchiseTitle: { fontSize: 26, fontWeight: "900", color: BRAND.gold, textAlign: "center" },
+  franchiseText: { fontSize: 14, textAlign: "center", marginTop: 6, lineHeight: 20 },
+  franchiseBtn: { marginTop: 14 },
+  partners: { flexDirection: "row", gap: 12 },
+  partner: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderWidth: 1,
   },
-  deliveryName: { fontSize: 12, fontWeight: "500" },
-  footer: {
+  partnerName: { fontSize: 15, fontWeight: "700" },
+  footer: { alignItems: "center", paddingVertical: 32, marginTop: 28, borderTopWidth: 1 },
+  footerScript: { fontFamily: FONTS.script, fontSize: 24, color: BRAND.gold },
+  socials: { flexDirection: "row", gap: 14, marginVertical: 14 },
+  social: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1,
     alignItems: "center",
-    paddingVertical: 32,
-    borderTopWidth: 1,
-    marginTop: 20,
+    justifyContent: "center",
   },
   footerText: { fontSize: 12 },
-  footerSubtext: { fontSize: 11, marginTop: 4 },
-  socialLinks: { flexDirection: "row", marginTop: 16 },
 });

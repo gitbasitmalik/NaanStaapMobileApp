@@ -6,11 +6,9 @@ import React, {
   useContext,
   ReactNode,
 } from "react";
-import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
+import { Text, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const { width } = Dimensions.get("window");
 
 type ToastType = "success" | "error" | "warning" | "info";
 
@@ -94,13 +92,13 @@ export function ToastProvider({ children }: ToastProviderProps) {
     switch (type) {
       case "success":
         return {
-          backgroundColor: "#28A745",
+          backgroundColor: "#BED630",
           icon: "checkmark-circle" as const,
         };
       case "error":
-        return { backgroundColor: "#E53935", icon: "close-circle" as const };
+        return { backgroundColor: "#FF6B6B", icon: "close-circle" as const };
       case "warning":
-        return { backgroundColor: "#FFC107", icon: "warning" as const };
+        return { backgroundColor: "#FFD74F", icon: "warning" as const };
       case "info":
         return {
           backgroundColor: "#2196F3",

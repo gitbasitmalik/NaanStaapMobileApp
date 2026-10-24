@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { readFileSync } from "fs";
 
 dotenv.config();
 
@@ -33,6 +34,17 @@ const POINTS_TO_POUNDS = 100;
 const REFERRAL_BONUS_REFERRER = 500;
 const REFERRAL_BONUS_REFEREE = 250;
 
+const DELIVERY_FEE = Number(process.env.DELIVERY_FEE || 2.99);
+const FREE_DELIVERY_THRESHOLD = Number(
+  process.env.FREE_DELIVERY_THRESHOLD || 25
+);
+const MIN_ORDER_AMOUNT = Number(process.env.MIN_ORDER_AMOUNT || 5);
+// Staff/admin tools (order status updates) authenticate with this key.
+const STAFF_API_KEY = process.env.STAFF_API_KEY || "";
+// When true, order statuses advance automatically over time (useful for demos
+// before the store has a kitchen screen hooked up to PUT /api/orders/:id/status).
+const DEMO_AUTO_PROGRESS = process.env.DEMO_AUTO_PROGRESS === "true";
+
 const ORDER_STATUSES = [
   { status: "pending", label: "Order Pending", duration: 0 },
   { status: "confirmed", label: "Order Confirmed", duration: 2 },
@@ -40,972 +52,72 @@ const ORDER_STATUSES = [
   { status: "ready", label: "Ready for Pickup/Delivery", duration: 5 },
   { status: "out_for_delivery", label: "Out for Delivery", duration: 20 },
   { status: "delivered", label: "Delivered", duration: 0 },
+  { status: "completed", label: "Collected", duration: 0 },
   { status: "cancelled", label: "Cancelled", duration: 0 },
 ];
 
-const DEFAULT_HOURS = [
-  { day: "Monday", open_time: "11:00", close_time: "23:00", is_closed: false },
-  { day: "Tuesday", open_time: "11:00", close_time: "23:00", is_closed: false },
-  {
-    day: "Wednesday",
-    open_time: "11:00",
-    close_time: "23:00",
-    is_closed: false,
-  },
-  {
-    day: "Thursday",
-    open_time: "11:00",
-    close_time: "23:00",
-    is_closed: false,
-  },
-  { day: "Friday", open_time: "11:00", close_time: "00:00", is_closed: false },
-  {
-    day: "Saturday",
-    open_time: "11:00",
-    close_time: "00:00",
-    is_closed: false,
-  },
-  { day: "Sunday", open_time: "12:00", close_time: "22:00", is_closed: false },
-];
+// Menu, chai, stores and allergens live in data/catalog.json (sourced from
+// naanstaap.co.uk). Edit that file to change prices or items, then restart.
+const catalog = JSON.parse(
+  readFileSync(new URL("./data/catalog.json", import.meta.url), "utf8")
+);
+const MENU_CATEGORIES = catalog.categories;
+const MENU_ITEMS = catalog.menu_items;
+const STORES = catalog.stores;
+const ALLERGENS = catalog.allergens;
+// The Chai tab shows these menu items with a few chai-specific flags.
+const CHAI_ITEMS = catalog.chai
+  .map((c) => {
+    const item = MENU_ITEMS.find((m) => m.id === c.id);
+    return item ? { ...item, ...c, size_options: [] } : null;
+  })
+  .filter(Boolean);
 
-const MENU_CATEGORIES = [
-  {
-    id: "naan",
-    name: "Naan",
-    description: "Freshly baked traditional naan breads",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    item_count: 6,
-  },
-  {
-    id: "paratha",
-    name: "Paratha",
-    description: "Layered flatbreads with various fillings",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    item_count: 4,
-  },
-  {
-    id: "curries",
-    name: "Curries",
-    description: "Rich and flavorful curry dishes",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    item_count: 6,
-  },
-  {
-    id: "street-food",
-    name: "Street Food",
-    description: "Authentic South Asian street delights",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    item_count: 5,
-  },
-  {
-    id: "snacks",
-    name: "Snacks",
-    description: "Quick bites and sides",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    item_count: 4,
-  },
-  {
-    id: "sweets",
-    name: "Sweets",
-    description: "Traditional desserts and sweet treats",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    item_count: 4,
-  },
-  {
-    id: "drinks",
-    name: "Drinks",
-    description: "Refreshing beverages and signature chais",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    item_count: 4,
-  },
-];
-
-const MENU_ITEMS = [
-  // Naan items
-  {
-    id: "1",
-    name: "Plain Naan",
-    description:
-      "Soft, fluffy tandoor-baked bread made with refined flour and yogurt",
-    price: 2.5,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 260,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra butter", "Garlic brushed"],
-  },
-  {
-    id: "2",
-    name: "Butter Naan",
-    description: "Naan brushed with golden butter for extra richness",
-    price: 3.0,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 320,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra butter", "Light butter"],
-  },
-  {
-    id: "3",
-    name: "Garlic Naan",
-    description: "Naan topped with fresh garlic and coriander",
-    price: 3.5,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 290,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra garlic", "Chilli flakes"],
-  },
-  {
-    id: "4",
-    name: "Cheese Naan",
-    description: "Naan stuffed with melted mozzarella cheese",
-    price: 4.0,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 380,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra cheese", "Mixed cheese"],
-  },
-  {
-    id: "5",
-    name: "Keema Naan",
-    description: "Naan stuffed with spiced minced lamb",
-    price: 5.0,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: false,
-    is_popular: true,
-    is_spicy: true,
-    calories: 420,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra spicy", "Mild"],
-  },
-  {
-    id: "6",
-    name: "Peshwari Naan",
-    description: "Sweet naan with coconut, almonds & sultanas",
-    price: 4.5,
-    category: "naan",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 350,
-    allergens: ["Gluten", "Dairy", "Nuts"],
-    customizations: ["Extra filling"],
-  },
-
-  // Paratha items
-  {
-    id: "7",
-    name: "Aloo Paratha",
-    description:
-      "Paratha stuffed with spiced potato, served with yogurt and pickle",
-    price: 4.0,
-    category: "paratha",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 340,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra butter", "With egg"],
-  },
-  {
-    id: "8",
-    name: "Gobi Paratha",
-    description: "Paratha stuffed with spiced cauliflower",
-    price: 4.0,
-    category: "paratha",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 320,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra butter"],
-  },
-  {
-    id: "9",
-    name: "Keema Paratha",
-    description: "Paratha stuffed with spiced minced meat",
-    price: 5.5,
-    category: "paratha",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: false,
-    is_popular: false,
-    is_spicy: true,
-    calories: 450,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra spicy", "With egg"],
-  },
-  {
-    id: "10",
-    name: "Plain Paratha",
-    description: "Layered buttery flatbread",
-    price: 3.0,
-    category: "paratha",
-    image_url:
-      "https://images.pexels.com/photos/30203311/pexels-photo-30203311.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 280,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra butter"],
-  },
-
-  // Curries
-  {
-    id: "11",
-    name: "Butter Chicken",
-    description:
-      "Tender chicken pieces in a creamy tomato-based sauce with butter and aromatic spices",
-    price: 9.5,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: false,
-    is_popular: true,
-    is_spicy: false,
-    calories: 550,
-    allergens: ["Dairy"],
-    customizations: ["Extra creamy", "Spicy", "With rice"],
-  },
-  {
-    id: "12",
-    name: "Lamb Karahi",
-    description:
-      "Lamb cooked in a wok with tomatoes, peppers and traditional spices",
-    price: 11.5,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: false,
-    is_popular: true,
-    is_spicy: true,
-    calories: 620,
-    allergens: [],
-    customizations: ["Extra spicy", "Mild", "With rice"],
-  },
-  {
-    id: "13",
-    name: "Chicken Tikka Masala",
-    description: "Grilled chicken tikka pieces in a rich creamy spiced sauce",
-    price: 10.0,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: false,
-    is_popular: true,
-    is_spicy: false,
-    calories: 580,
-    allergens: ["Dairy"],
-    customizations: ["Extra creamy", "Spicy", "With rice"],
-  },
-  {
-    id: "14",
-    name: "Lamb Nihari",
-    description:
-      "Slow-cooked lamb shank in rich aromatic gravy - a traditional breakfast dish",
-    price: 12.5,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: false,
-    is_popular: false,
-    is_spicy: true,
-    calories: 650,
-    allergens: [],
-    customizations: ["Extra spicy", "With naan"],
-  },
-  {
-    id: "15",
-    name: "Paneer Butter Masala",
-    description: "Cottage cheese cubes in a creamy tomato sauce",
-    price: 8.5,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 480,
-    allergens: ["Dairy"],
-    customizations: ["Extra paneer", "Spicy"],
-  },
-  {
-    id: "16",
-    name: "Daal Tadka",
-    description: "Yellow lentils tempered with cumin, garlic and spices",
-    price: 6.5,
-    category: "curries",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 320,
-    allergens: [],
-    customizations: ["Extra tadka", "With rice"],
-  },
-
-  // Street Food
-  {
-    id: "17",
-    name: "Samosa Chaat",
-    description:
-      "Crushed samosas topped with chickpeas, chutneys, yogurt and sev",
-    price: 5.5,
-    category: "street-food",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 380,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra spicy", "No yogurt"],
-  },
-  {
-    id: "18",
-    name: "Pani Puri",
-    description: "6 crispy shells with spiced water, chickpeas and chutneys",
-    price: 4.5,
-    category: "street-food",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 250,
-    allergens: ["Gluten"],
-    customizations: ["Extra spicy water", "Sweet water"],
-  },
-  {
-    id: "19",
-    name: "Seekh Kebab Roll",
-    description: "Minced meat kebabs wrapped in paratha with salad and sauces",
-    price: 7.5,
-    category: "street-food",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    is_vegetarian: false,
-    is_popular: true,
-    is_spicy: true,
-    calories: 520,
-    allergens: ["Gluten"],
-    customizations: ["Extra spicy", "No salad"],
-  },
-  {
-    id: "20",
-    name: "Chicken Tikka Roll",
-    description: "Grilled chicken tikka wrapped in paratha with fresh salad",
-    price: 7.5,
-    category: "street-food",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    is_vegetarian: false,
-    is_popular: false,
-    is_spicy: false,
-    calories: 480,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra sauce", "Spicy"],
-  },
-  {
-    id: "21",
-    name: "Dahi Bhalla",
-    description: "Lentil dumplings soaked in creamy yogurt with chutneys",
-    price: 5.0,
-    category: "street-food",
-    image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 280,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Extra yogurt"],
-  },
-
-  // Snacks
-  {
-    id: "22",
-    name: "Chicken Wings",
-    description:
-      "6 spicy tandoori chicken wings marinated in yogurt and spices",
-    price: 6.5,
-    category: "snacks",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: false,
-    is_popular: false,
-    is_spicy: true,
-    calories: 420,
-    allergens: ["Dairy"],
-    customizations: ["Extra spicy", "BBQ sauce"],
-  },
-  {
-    id: "23",
-    name: "Vegetable Samosa",
-    description: "2 crispy pastries with spiced potato and pea filling",
-    price: 2.5,
-    category: "snacks",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 280,
-    allergens: ["Gluten"],
-    customizations: ["With chutney"],
-  },
-  {
-    id: "24",
-    name: "Chicken Samosa",
-    description: "2 crispy pastries with spiced chicken filling",
-    price: 3.0,
-    category: "snacks",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: false,
-    is_popular: false,
-    is_spicy: false,
-    calories: 320,
-    allergens: ["Gluten"],
-    customizations: ["With chutney"],
-  },
-  {
-    id: "25",
-    name: "Pakora Platter",
-    description: "Mixed vegetable fritters served with mint chutney",
-    price: 4.0,
-    category: "snacks",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 350,
-    allergens: ["Gluten"],
-    customizations: ["Extra crispy"],
-  },
-
-  // Sweets
-  {
-    id: "26",
-    name: "Gulab Jamun",
-    description: "3 deep-fried milk balls soaked in rose-flavored syrup",
-    price: 4.0,
-    category: "sweets",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 380,
-    allergens: ["Dairy", "Gluten"],
-    customizations: ["Warm", "With ice cream"],
-  },
-  {
-    id: "27",
-    name: "Kheer",
-    description: "Creamy rice pudding with cardamom, pistachios and almonds",
-    price: 3.5,
-    category: "sweets",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 320,
-    allergens: ["Dairy", "Nuts"],
-    customizations: ["Extra nuts"],
-  },
-  {
-    id: "28",
-    name: "Jalebi",
-    description: "Crispy sweet spirals soaked in saffron syrup",
-    price: 3.5,
-    category: "sweets",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 350,
-    allergens: ["Gluten", "Dairy"],
-    customizations: ["Warm"],
-  },
-  {
-    id: "29",
-    name: "Ras Malai",
-    description: "2 soft cheese balls in creamy cardamom milk",
-    price: 4.5,
-    category: "sweets",
-    image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 290,
-    allergens: ["Dairy", "Nuts"],
-    customizations: ["Extra cream"],
-  },
-
-  // Drinks
-  {
-    id: "30",
-    name: "Karak Chai",
-    description: "Signature strong tea with cardamom - bold and flavourful",
-    price: 2.5,
-    category: "drinks",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_vegetarian: true,
-    is_popular: true,
-    is_spicy: false,
-    calories: 120,
-    allergens: ["Dairy"],
-    customizations: ["Sugar free", "Extra strong"],
-  },
-  {
-    id: "31",
-    name: "Mango Lassi",
-    description: "Creamy mango yogurt drink - refreshing and sweet",
-    price: 3.5,
-    category: "drinks",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 220,
-    allergens: ["Dairy"],
-    customizations: ["Less sweet"],
-  },
-  {
-    id: "32",
-    name: "Masala Chai",
-    description: "Spiced tea with ginger, cinnamon and cardamom",
-    price: 2.5,
-    category: "drinks",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 110,
-    allergens: ["Dairy"],
-    customizations: ["Sugar free"],
-  },
-  {
-    id: "33",
-    name: "Fresh Lime Soda",
-    description: "Refreshing lime drink with mint - sweet or salted",
-    price: 2.5,
-    category: "drinks",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_vegetarian: true,
-    is_popular: false,
-    is_spicy: false,
-    calories: 80,
-    allergens: [],
-    customizations: ["Sweet", "Salted", "Mixed"],
-  },
-];
-
-const STORES = [
-  {
-    id: "1",
-    name: "Green Street",
-    address: "32 Plashet Grove",
-    city: "London",
-    postcode: "E6 1AE",
-    phone: "+44 20 8257 3783",
-    latitude: 51.534,
-    longitude: 0.045,
-    google_maps_url: "https://maps.app.goo.gl/azXJaLwcBPDFwNuN8",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "2",
-    name: "Whitechapel",
-    address: "97 New Rd",
-    city: "London",
-    postcode: "E1 1HJ",
-    phone: "+44 20 7247 5693",
-    latitude: 51.5165,
-    longitude: -0.0645,
-    google_maps_url: "https://maps.google.com/?q=97+New+Rd+London+E1+1HJ",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "3",
-    name: "Ilford",
-    address: "209 Ilford Ln",
-    city: "Ilford",
-    postcode: "IG1 2RU",
-    phone: "+44 20 8637 4050",
-    latitude: 51.557,
-    longitude: 0.066,
-    google_maps_url: "https://maps.google.com/?q=209+Ilford+Ln+Ilford+IG1+2RU",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "4",
-    name: "Gants Hill",
-    address: "374 Cranbrook RD, Gants Hill",
-    city: "Ilford",
-    postcode: "IG2 6HW",
-    phone: "+44 20 8926 6011",
-    latitude: 51.5765,
-    longitude: 0.0668,
-    google_maps_url:
-      "https://maps.google.com/?q=374+Cranbrook+RD+Gants+Hill+Ilford+IG2+6HW",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "5",
-    name: "Harrow",
-    address: "11 Station Rd",
-    city: "Harrow",
-    postcode: "HA1 2UF",
-    phone: "+44 20 8248 6393",
-    latitude: 51.5795,
-    longitude: -0.334,
-    google_maps_url: "https://maps.google.com/?q=11+Station+Rd+Harrow+HA1+2UF",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "6",
-    name: "Southall",
-    address: "30 South Rd",
-    city: "Southall, London",
-    postcode: "UB1 1RR",
-    phone: "+44 20 3093 6446",
-    latitude: 51.511,
-    longitude: -0.3762,
-    google_maps_url:
-      "https://maps.google.com/?q=30+South+Rd+Southall+London+UB1+1RR",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "7",
-    name: "Tooting",
-    address: "233 Upper Tooting Road",
-    city: "London",
-    postcode: "SW17 7TG",
-    phone: "+44 20 8922 7549",
-    latitude: 51.4294,
-    longitude: -0.1642,
-    google_maps_url:
-      "https://maps.google.com/?q=233+Upper+Tooting+Road+London+SW17+7TG",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "8",
-    name: "Romford",
-    address: "Unit 2 7, Station Chambers, Victoria Road",
-    city: "Romford",
-    postcode: "RM1 2HS",
-    phone: "+44 79 3632 4856",
-    latitude: 51.5748,
-    longitude: 0.1838,
-    google_maps_url: "https://maps.google.com/?q=Victoria+Road+Romford+RM1+2HS",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-  {
-    id: "9",
-    name: "Leicester",
-    address: "6 Horsefair St",
-    city: "Leicester",
-    postcode: "LE1 5BN",
-    phone: "+44 11 6507 9748",
-    latitude: 52.6367,
-    longitude: -1.1335,
-    google_maps_url:
-      "https://maps.google.com/?q=6+Horsefair+St+Leicester+LE1+5BN",
-    image_url:
-      "https://images.unsplash.com/photo-1556745750-68295fefafc5?w=400",
-    hours: DEFAULT_HOURS,
-    is_open_now: true,
-    delivery_available: true,
-    dine_in_available: true,
-    takeaway_available: true,
-  },
-];
-
-const CHAI_ITEMS = [
-  {
-    id: "1",
-    name: "Karak Chai",
-    description:
-      "Our signature strong tea prepared with carefully selected tea leaves, infused with cardamom, and simmered to perfection. Bold, flavourful with a velvety texture and warming spice.",
-    price: 2.5,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: true,
-    size_options: [
-      { size: "Regular", price: 2.5 },
-      { size: "Large", price: 3.5 },
-    ],
-  },
-  {
-    id: "2",
-    name: "Cinnamon Chai",
-    description:
-      "Karak Chai with a pinch of cinnamon - the choice of many tea lovers.",
-    price: 3.0,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 3.0 },
-      { size: "Large", price: 4.0 },
-    ],
-  },
-  {
-    id: "3",
-    name: "Caramel Chai",
-    description:
-      "A delightful mix of coffee, tea, and candy - Karak Chai with a caramel taste.",
-    price: 3.5,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 3.5 },
-      { size: "Large", price: 4.5 },
-    ],
-  },
-  {
-    id: "4",
-    name: "Vanilla Chai",
-    description:
-      "Karak Chai with vanilla flavour - soothing, delicious, and aromatic.",
-    price: 3.0,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 3.0 },
-      { size: "Large", price: 4.0 },
-    ],
-  },
-  {
-    id: "5",
-    name: "Karak Chocolate",
-    description:
-      "Hot chocolate infused with karak chai and topped with whipping cream.",
-    price: 4.0,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 4.0 },
-      { size: "Large", price: 5.0 },
-    ],
-  },
-  {
-    id: "6",
-    name: "Pink Tea (Kashmiri)",
-    description:
-      "Traditional Kashmiri Chai - a delightful pink tea sprinkled with flaked almonds.",
-    price: 3.5,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 3.5 },
-      { size: "Large", price: 4.5 },
-    ],
-  },
-  {
-    id: "7",
-    name: "Masala Chai",
-    description:
-      "Spiced tea blend with ginger, cinnamon, cloves, and cardamom.",
-    price: 2.75,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 2.75 },
-      { size: "Large", price: 3.75 },
-    ],
-  },
-  {
-    id: "8",
-    name: "Green Tea",
-    description: "Experience the healing properties of our premium green tea.",
-    price: 2.5,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 2.5 },
-      { size: "Large", price: 3.5 },
-    ],
-  },
-  {
-    id: "9",
-    name: "Chai Latte",
-    description: "Fusion of traditional chai with creamy steamed milk.",
-    price: 3.5,
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    is_signature: false,
-    size_options: [
-      { size: "Regular", price: 3.5 },
-      { size: "Large", price: 4.5 },
-    ],
-  },
-];
-
+// App promo codes. These are starter offers for launch: confirm or edit them
+// with the business before going live (min_order_amount / first_order_only
+// are enforced at checkout, terms are shown to customers).
 const DEALS = [
   {
-    id: "1",
-    title: "Family Feast Deal",
-    description: "2 Curries + 4 Naan + Rice + 4 Drinks",
-    discount_percentage: 20,
-    discount_amount: null,
-    code: "FAMILY20",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    valid_until: "2026-12-31",
-    terms:
-      "Valid on dine-in and delivery. Cannot be combined with other offers.",
-    is_active: true,
-  },
-  {
-    id: "2",
-    title: "Lunch Special",
-    description: "Any curry with naan and drink for £9.99",
-    discount_percentage: null,
-    discount_amount: 3.0,
-    code: "LUNCH999",
-    image_url:
-      "https://images.pexels.com/photos/35287423/pexels-photo-35287423.jpeg",
-    valid_until: "2026-12-31",
-    terms: "Available Mon-Fri, 11am-3pm only.",
-    is_active: true,
-  },
-  {
-    id: "3",
-    title: "Chai & Paratha Combo",
-    description: "2 Parathas + Karak Chai for £7.99",
-    discount_percentage: 15,
-    discount_amount: null,
-    code: "CHAI15",
-    image_url:
-      "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
-    valid_until: "2026-12-31",
-    terms: "Valid all day. Dine-in and takeaway.",
-    is_active: true,
-  },
-  {
-    id: "4",
-    title: "First Order Discount",
-    description: "Get 10% off on your first order",
+    id: "welcome10",
+    title: "10% off your first app order",
+    description: "New to the Naan Staap app? Enjoy 10% off your first order.",
     discount_percentage: 10,
     discount_amount: null,
     code: "WELCOME10",
     image_url:
-      "https://images.pexels.com/photos/34968009/pexels-photo-34968009.jpeg",
-    valid_until: "2026-12-31",
-    terms: "Valid for new customers only. Min order £15.",
+      "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Cheese-Naan-1024x1024.jpg",
+    valid_until: "2027-12-31",
+    terms: "First app order only. Minimum spend £10. One use per customer.",
+    min_order_amount: 10,
+    first_order_only: true,
     is_active: true,
   },
   {
-    id: "5",
-    title: "Student Deal",
-    description: "15% off with valid student ID",
-    discount_percentage: 15,
+    id: "family20",
+    title: "Feed the family",
+    description: "20% off when you spend £40 or more.",
+    discount_percentage: 20,
     discount_amount: null,
-    code: "STUDENT15",
+    code: "FAMILY20",
     image_url:
-      "https://images.pexels.com/photos/18488315/pexels-photo-18488315.jpeg",
-    valid_until: "2026-12-31",
-    terms: "Valid student ID required. Dine-in only.",
+      "https://naanstaap.co.uk/wp-content/uploads/2026/06/Desi-breakfast-1024x1024.jpg",
+    valid_until: "2027-12-31",
+    terms: "Minimum spend £40. One use per customer. Not valid with other offers.",
+    min_order_amount: 40,
+    is_active: true,
+  },
+  {
+    id: "chai2",
+    title: "£2 off your chai run",
+    description: "£2 off any order over £12 — perfect for a karak round.",
+    discount_percentage: null,
+    discount_amount: 2,
+    code: "CHAI2",
+    image_url:
+      "https://naanstaap.co.uk/wp-content/uploads/2025/08/Karak-Chai-1024x1024.jpg",
+    valid_until: "2027-12-31",
+    terms: "Minimum spend £12. One use per customer.",
+    min_order_amount: 12,
     is_active: true,
   },
 ];
@@ -1013,7 +125,6 @@ const DEALS = [
 // In-memory storage for non-MongoDB data
 const carts = new Map();
 const favorites = new Map();
-const newsletterSubscribers = [];
 
 // =====================
 // Authentication Middleware
@@ -1072,6 +183,14 @@ const optionalAuthMiddleware = async (req, res, next) => {
 const adminMiddleware = async (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({ detail: "Admin access required" });
+  }
+  next();
+};
+
+// Staff middleware: store tools send the STAFF_API_KEY in x-staff-key.
+const staffMiddleware = (req, res, next) => {
+  if (!STAFF_API_KEY || req.headers["x-staff-key"] !== STAFF_API_KEY) {
+    return res.status(403).json({ detail: "Staff access required" });
   }
   next();
 };
@@ -1566,14 +685,14 @@ app.put("/api/auth/preferences", authMiddleware, async (req, res) => {
     }
 
     if (allergen_alerts) {
+      // The 14 UK allergens (as used in the allergen guide), plus the older
+      // short names earlier app versions sent.
       const validAllergens = [
-        "Gluten",
+        ...ALLERGENS.allergen_list,
         "Dairy",
         "Nuts",
-        "Eggs",
         "Soy",
         "Shellfish",
-        "Fish",
       ];
       const invalidAllergens = allergen_alerts.filter(
         (a) => !validAllergens.includes(a)
@@ -1759,7 +878,7 @@ app.put("/api/addresses/:addressId", authMiddleware, async (req, res) => {
     const addressIndex = req.user.saved_addresses?.findIndex(
       (a) => a.id === req.params.addressId
     );
-    if (addressIndex === -1) {
+    if (addressIndex == null || addressIndex === -1) {
       return res.status(404).json({ detail: "Address not found" });
     }
 
@@ -1781,7 +900,10 @@ app.put("/api/addresses/:addressId", authMiddleware, async (req, res) => {
       ...existingAddress,
       label: label?.trim() || existingAddress.label,
       address_line1: address_line1?.trim() || existingAddress.address_line1,
-      address_line2: address_line2?.trim() || existingAddress.address_line2,
+      address_line2:
+        address_line2 !== undefined
+          ? String(address_line2).trim()
+          : existingAddress.address_line2,
       city: city?.trim() || existingAddress.city,
       postcode: postcode?.toUpperCase().trim() || existingAddress.postcode,
       country: country || existingAddress.country,
@@ -1791,7 +913,9 @@ app.put("/api/addresses/:addressId", authMiddleware, async (req, res) => {
       is_default:
         is_default !== undefined ? is_default : existingAddress.is_default,
       delivery_instructions:
-        delivery_instructions?.trim() || existingAddress.delivery_instructions,
+        delivery_instructions !== undefined
+          ? String(delivery_instructions).trim()
+          : existingAddress.delivery_instructions,
       updated_at: new Date(),
     };
 
@@ -1918,11 +1042,10 @@ app.get("/api/loyalty/balance", authMiddleware, async (req, res) => {
     tierBenefits = [
       "Earn 15 points per £1 spent",
       "Free delivery on orders over £20",
-      "Early access to deals",
     ];
   } else if (user.total_spent >= 200) {
     tier = "Silver";
-    tierBenefits = ["Earn 12 points per £1 spent", "Birthday bonus points"];
+    tierBenefits = ["Earn 12 points per £1 spent"];
   }
 
   res.json({
@@ -1931,6 +1054,21 @@ app.get("/api/loyalty/balance", authMiddleware, async (req, res) => {
     points_to_next_reward: pointsToNextReward,
     tier,
     tier_benefits: tierBenefits,
+    total_spent: roundMoney(user.total_spent || 0),
+    next_tier: tier === "Bronze" ? "Silver" : tier === "Silver" ? "Gold" : null,
+    spend_to_next_tier:
+      tier === "Gold"
+        ? 0
+        : roundMoney((tier === "Bronze" ? 200 : 500) - (user.total_spent || 0)),
+    tier_progress:
+      tier === "Gold"
+        ? 1
+        : Math.min(
+            1,
+            tier === "Bronze"
+              ? (user.total_spent || 0) / 200
+              : ((user.total_spent || 0) - 200) / 300
+          ),
     total_earned: user.total_points_earned || 0,
     total_redeemed: user.total_points_redeemed || 0,
   });
@@ -2075,27 +1213,6 @@ app.get("/api/loyalty/rewards", authMiddleware, async (req, res) => {
       points_required: 1000,
       description: "Get £10 off your next order",
       is_available: points >= 1000,
-    },
-    {
-      id: "4",
-      name: "Free Chai",
-      points_required: 150,
-      description: "Redeem for a free Karak Chai",
-      is_available: points >= 150,
-    },
-    {
-      id: "5",
-      name: "Free Naan",
-      points_required: 200,
-      description: "Redeem for a free Butter Naan",
-      is_available: points >= 200,
-    },
-    {
-      id: "6",
-      name: "Free Delivery",
-      points_required: 250,
-      description: "Get free delivery on your next order",
-      is_available: points >= 250,
     },
   ];
 
@@ -2930,13 +2047,17 @@ app.get("/api/orders/history", authMiddleware, async (req, res) => {
       }
     }
 
-    const orders = await db
-      .collection("orders")
-      .find(filter)
-      .sort({ created_at: -1 })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .toArray();
+    const orders = await Promise.all(
+      (
+        await db
+          .collection("orders")
+          .find(filter)
+          .sort({ created_at: -1 })
+          .skip(skip)
+          .limit(parseInt(limit))
+          .toArray()
+      ).map(autoProgressOrder)
+    );
 
     const total = await db.collection("orders").countDocuments(filter);
 
@@ -3030,18 +2151,51 @@ const getMostOrderedItems = (orders) => {
 };
 
 // 7.1.5 Create New Order
-app.post("/api/orders", async (req, res) => {
+// Validate and quote a discount code before checkout
+app.post(
+  "/api/orders/validate-discount",
+  optionalAuthMiddleware,
+  async (req, res) => {
+    try {
+      const { code, subtotal } = req.body;
+      if (!code) {
+        return res.status(400).json({ detail: "Discount code is required" });
+      }
+      const result = await resolveDiscount(
+        code,
+        Number(subtotal) || 0,
+        req.user || null
+      );
+      if (result.error) {
+        return res.status(400).json({ detail: result.error });
+      }
+      res.json({
+        code: result.code,
+        discount: result.discount,
+        description: result.description,
+      });
+    } catch (error) {
+      console.error("Error validating discount:", error);
+      res.status(500).json({ detail: "Error validating discount code" });
+    }
+  }
+);
+
+app.post("/api/orders", optionalAuthMiddleware, async (req, res) => {
   try {
     const {
       cart_id,
+      items: requestItems,
       customer_name,
       customer_phone,
       customer_email,
       delivery_address,
       store_id,
-      order_type,
+      order_type = "pickup",
       payment_method,
       special_instructions,
+      discount_code,
+      scheduled_for,
     } = req.body;
 
     // Validate required fields
@@ -3050,76 +2204,145 @@ app.post("/api/orders", async (req, res) => {
         .status(400)
         .json({ detail: "Customer information is required" });
     }
-
-    if (!cart_id) {
-      return res.status(400).json({ detail: "Cart ID is required" });
+    if (!validateEmail(customer_email)) {
+      return res.status(400).json({ detail: "Invalid email format" });
+    }
+    if (!["delivery", "pickup", "dine-in"].includes(order_type)) {
+      return res.status(400).json({ detail: "Invalid order type" });
+    }
+    if (order_type === "delivery" && !delivery_address) {
+      return res
+        .status(400)
+        .json({ detail: "A delivery address is required for delivery" });
     }
 
-    // Get cart items
-    const cart = carts.get(cart_id);
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ detail: "Cart is empty or not found" });
+    // Items come straight from the app; the legacy cart_id flow is still accepted.
+    let sourceItems = requestItems;
+    if (!Array.isArray(sourceItems) || sourceItems.length === 0) {
+      const cart = cart_id ? carts.get(cart_id) : null;
+      sourceItems = cart?.items || [];
+    }
+    if (sourceItems.length === 0) {
+      return res.status(400).json({ detail: "Your basket is empty" });
     }
 
-    // Get store info
-    const store = STORES.find((s) => s.id === store_id) || STORES[0];
+    const { items, error: itemsError } = priceOrderItems(sourceItems);
+    if (itemsError) {
+      return res.status(400).json({ detail: itemsError });
+    }
 
-    // Calculate totals
-    const subtotal = cart.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
+    const store = STORES.find((s) => s.id === store_id);
+    if (!store) {
+      return res.status(400).json({ detail: "Please choose a store" });
+    }
+    if (process.env.ALLOW_ORDERS_WHEN_CLOSED !== "true" && !withOpenStatus(store).is_open_now) {
+      return res.status(400).json({
+        detail: `${store.name} is closed right now (${store.hours_summary}). Please try again during opening hours.`,
+      });
+    }
+
+    const subtotal = roundMoney(
+      items.reduce((sum, item) => sum + item.subtotal, 0)
     );
-    const delivery_fee = order_type === "delivery" ? 2.99 : 0;
-    const tax = subtotal * 0.1;
-    const total = subtotal + delivery_fee + tax;
+    if (subtotal < MIN_ORDER_AMOUNT) {
+      return res.status(400).json({
+        detail: `Minimum order is £${MIN_ORDER_AMOUNT.toFixed(2)}`,
+      });
+    }
 
-    // Create order
+    let discount = 0;
+    let appliedCode = null;
+    let discountRecord = null;
+    if (discount_code) {
+      const result = await resolveDiscount(
+        discount_code,
+        subtotal,
+        req.user || null
+      );
+      if (result.error) {
+        return res.status(400).json({ detail: result.error });
+      }
+      discount = result.discount;
+      appliedCode = result.code;
+      discountRecord = result.record;
+    }
+
+    // Gold members get free delivery from £20 (see GET /api/loyalty/balance).
+    const freeDeliveryFrom =
+      req.user && tierForSpend(req.user.total_spent || 0) === "Gold"
+        ? Math.min(20, FREE_DELIVERY_THRESHOLD)
+        : FREE_DELIVERY_THRESHOLD;
+    const delivery_fee =
+      order_type === "delivery" && subtotal < freeDeliveryFrom ? DELIVERY_FEE : 0;
+    const total = roundMoney(Math.max(0, subtotal - discount) + delivery_fee);
+    const now = new Date();
+    const prepMinutes = order_type === "delivery" ? 40 : 20;
+
     const order = {
       id: uuidv4(),
-      user_id: null, // Guest order
+      order_number: await nextOrderNumber(),
+      user_id: req.user?.id || null,
       store_id: store.id,
       store_name: store.name,
-      items: cart.items.map((item) => ({
-        item_id: item.item_id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        customizations: item.customizations || [],
-        special_instructions: item.special_instructions || "",
-        subtotal: item.price * item.quantity,
-      })),
+      items,
       subtotal,
       delivery_fee,
-      tax,
       tip: 0,
-      discount: 0,
+      discount,
+      discount_amount: discount,
+      discount_code: appliedCode,
       total,
       status: "pending",
-      order_type: order_type || "pickup",
-      payment_method: payment_method || "cash",
+      status_label: "Order Pending",
+      status_history: [
+        { status: "pending", label: "Order Pending", timestamp: now },
+      ],
+      order_type,
+      payment_method: payment_method || "pay_in_store",
       payment_status: "pending",
       customer_name,
       customer_phone,
       customer_email,
-      delivery_address: delivery_address || null,
+      delivery_address: order_type === "delivery" ? delivery_address : null,
       special_instructions: special_instructions || "",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      estimated_ready_time: new Date(Date.now() + 30 * 60000).toISOString(),
+      scheduled_for: scheduled_for || null,
+      created_at: now,
+      updated_at: now,
+      estimated_time: prepMinutes,
+      estimated_ready_time: new Date(now.getTime() + prepMinutes * 60000),
       is_reviewed: false,
     };
 
-    // Save to database
     await db.collection("orders").insertOne(order);
 
-    // Clear the cart
-    carts.delete(cart_id);
+    if (discountRecord) {
+      await db
+        .collection("discount_codes")
+        .updateOne({ id: discountRecord.id }, { $inc: { uses: 1 } });
+    }
+    if (appliedCode && req.user) {
+      await db
+        .collection("users")
+        .updateOne(
+          { id: req.user.id },
+          { $addToSet: { used_discount_codes: appliedCode } }
+        );
+    }
+    if (cart_id) {
+      carts.delete(cart_id);
+    }
 
     res.status(201).json({
       id: order.id,
+      order_number: order.order_number,
       status: order.status,
+      subtotal: order.subtotal,
+      discount: order.discount,
+      delivery_fee: order.delivery_fee,
       total: order.total,
+      estimated_time: order.estimated_time,
       estimated_ready_time: order.estimated_ready_time,
+      points_to_earn: req.user ? calculateLoyaltyPoints(order.total) : 0,
       message: "Order placed successfully",
     });
   } catch (error) {
@@ -3128,16 +2351,58 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
+// Cancel an order before the kitchen accepts it
+app.post("/api/orders/:orderId/cancel", authMiddleware, async (req, res) => {
+  try {
+    const order = await db
+      .collection("orders")
+      .findOne({ id: req.params.orderId });
+    if (!order) {
+      return res.status(404).json({ detail: "Order not found" });
+    }
+    if (order.user_id !== req.user.id) {
+      return res.status(403).json({ detail: "Not authorized" });
+    }
+    if (order.status !== "pending") {
+      return res.status(400).json({
+        detail: "This order is already being prepared and can't be cancelled",
+      });
+    }
+    await db.collection("orders").updateOne(
+      { id: order.id },
+      {
+        $set: {
+          status: "cancelled",
+          status_label: "Cancelled",
+          updated_at: new Date(),
+        },
+        $push: {
+          status_history: {
+            status: "cancelled",
+            label: "Cancelled",
+            timestamp: new Date(),
+          },
+        },
+      }
+    );
+    res.json({ message: "Order cancelled" });
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    res.status(500).json({ detail: "Error cancelling order" });
+  }
+});
+
 // 7.2 Get Order Details
 app.get("/api/orders/:orderId", optionalAuthMiddleware, async (req, res) => {
   try {
-    const order = await db
+    let order = await db
       .collection("orders")
       .findOne({ id: req.params.orderId });
 
     if (!order) {
       return res.status(404).json({ detail: "Order not found" });
     }
+    order = await autoProgressOrder(order);
 
     // If authenticated, verify ownership for full details
     const isOwner = req.user && order.user_id === req.user.id;
@@ -3175,55 +2440,63 @@ app.get("/api/orders/:orderId", optionalAuthMiddleware, async (req, res) => {
 // 8.1 Get Order Status
 app.get("/api/orders/:orderId/status", async (req, res) => {
   try {
-    const order = await db
+    let order = await db
       .collection("orders")
       .findOne({ id: req.params.orderId });
 
     if (!order) {
       return res.status(404).json({ detail: "Order not found" });
     }
+    order = await autoProgressOrder(order);
 
-    const currentStatusIndex = ORDER_STATUSES.findIndex(
-      (s) => s.status === order.status
-    );
-    const currentStatus = ORDER_STATUSES[currentStatusIndex];
+    const flow = statusFlowFor(order.order_type);
+    const currentIndex = flow.indexOf(order.status);
+    const currentStatus = ORDER_STATUSES.find((s) => s.status === order.status);
+    const durationOf = (st) =>
+      ORDER_STATUSES.find((s) => s.status === st)?.duration || 0;
 
-    // Calculate remaining time
-    const remainingTime = ORDER_STATUSES.slice(currentStatusIndex).reduce(
-      (sum, s) => sum + s.duration,
-      0
-    );
+    // Remaining minutes across the steps still to come
+    const remainingTime =
+      currentIndex < 0
+        ? 0
+        : flow.slice(currentIndex).reduce((sum, st) => sum + durationOf(st), 0);
 
-    // Build status timeline
-    const timeline = ORDER_STATUSES.filter(
-      (s) => !["pending", "cancelled"].includes(s.status)
-    ).map((s, index) => {
-      const historyEntry = order.status_history?.find(
-        (h) => h.status === s.status
-      );
-      const statusIndex = ORDER_STATUSES.findIndex(
-        (os) => os.status === s.status
-      );
+    // "ready" reads differently for collection and delivery orders.
+    const labelFor = (st) =>
+      st === "ready"
+        ? order.order_type === "delivery"
+          ? "Packed & Ready"
+          : "Ready to Collect"
+        : ORDER_STATUSES.find((s) => s.status === st)?.label || st;
 
-      return {
-        status: s.status,
-        label: s.label,
-        is_completed: statusIndex < currentStatusIndex,
-        is_current: s.status === order.status,
-        is_upcoming: statusIndex > currentStatusIndex,
-        timestamp: historyEntry?.timestamp || null,
-      };
-    });
+    const timeline = flow
+      .filter((st) => st !== "pending")
+      .map((st) => {
+        const info = { label: labelFor(st) };
+        const historyEntry = [...(order.status_history || [])]
+          .reverse()
+          .find((h) => h.status === st);
+        const index = flow.indexOf(st);
+        return {
+          status: st,
+          label: info.label,
+          is_completed: currentIndex >= 0 && index < currentIndex,
+          is_current: st === order.status,
+          is_upcoming: currentIndex < 0 || index > currentIndex,
+          timestamp: historyEntry?.timestamp || null,
+        };
+      });
 
     res.json({
       order_id: order.id,
+      order_number: order.order_number || null,
       status: order.status,
-      status_label: currentStatus?.label || order.status,
+      status_label: currentStatus ? labelFor(order.status) : order.status,
       estimated_time: remainingTime,
       order_type: order.order_type,
       store_id: order.store_id,
       store_name:
-        STORES.find((s) => s.id === order.store_id)?.name || "Unknown",
+        STORES.find((s) => s.id === order.store_id)?.name || order.store_name,
       timeline,
       last_updated: order.updated_at || order.created_at,
       delivery_address:
@@ -3237,7 +2510,7 @@ app.get("/api/orders/:orderId/status", async (req, res) => {
 });
 
 // 8.2 Update Order Status (Admin/Store use)
-app.put("/api/orders/:orderId/status", async (req, res) => {
+app.put("/api/orders/:orderId/status", staffMiddleware, async (req, res) => {
   try {
     const { status, estimated_time, driver_info } = req.body;
 
@@ -3273,35 +2546,6 @@ app.put("/api/orders/:orderId/status", async (req, res) => {
       updates.driver_info = driver_info;
     }
 
-    if (status === "delivered" || status === "completed") {
-      updates.completed_at = new Date();
-
-      // Award loyalty points
-      if (order.user_id) {
-        const pointsEarned = calculateLoyaltyPoints(order.total);
-        await db.collection("users").updateOne(
-          { id: order.user_id },
-          {
-            $inc: {
-              loyalty_points: pointsEarned,
-              total_points_earned: pointsEarned,
-              total_orders: 1,
-              total_spent: order.total,
-            },
-          }
-        );
-
-        await db.collection("loyalty_transactions").insertOne({
-          id: uuidv4(),
-          user_id: order.user_id,
-          type: "order_points",
-          points: pointsEarned,
-          description: `Points earned from order #${order.id.slice(0, 8)}`,
-          order_id: order.id,
-          created_at: new Date(),
-        });
-      }
-    }
 
     await db.collection("orders").updateOne(
       { id: req.params.orderId },
@@ -3316,6 +2560,10 @@ app.put("/api/orders/:orderId/status", async (req, res) => {
         },
       }
     );
+
+    if (status === "delivered" || status === "completed") {
+      await awardOrderPoints(order);
+    }
 
     res.json({
       message: "Status updated successfully",
@@ -3354,7 +2602,7 @@ app.get("/api/referral", authMiddleware, async (req, res) => {
 
   res.json({
     referral_code: user.referral_code,
-    referral_link: `https://naanstaap.com/signup?ref=${user.referral_code}`,
+    referral_link: `https://naanstaap.co.uk/?ref=${user.referral_code}`,
     referral_count: referralCount,
     total_points_earned: totalPointsEarned,
     reward_per_referral: REFERRAL_BONUS_REFERRER,
@@ -3796,6 +3044,219 @@ app.get("/api/menu/items/:itemId/similar", async (req, res) => {
 // DISCOUNT CODE HELPER
 // ========================================
 
+const roundMoney = (value) => Math.round(value * 100) / 100;
+
+// Look up a sellable product (menu item or chai) by id.
+const findProduct = (itemId) =>
+  MENU_ITEMS.find((i) => i.id === itemId) ||
+  CHAI_ITEMS.find((c) => c.id === itemId) ||
+  null;
+
+// Price every line from the server's own menu so the app can't set prices.
+// A chai line picks its size by listing the size name in `customizations`.
+const priceOrderItems = (sourceItems) => {
+  const items = [];
+  for (const line of sourceItems) {
+    const product = findProduct(line.item_id);
+    if (!product) {
+      return { error: `"${line.name || line.item_id}" is no longer available` };
+    }
+    const quantity = parseInt(line.quantity, 10);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 50) {
+      return { error: `Invalid quantity for ${product.name}` };
+    }
+    const customizations = Array.isArray(line.customizations)
+      ? line.customizations.map(String).slice(0, 10)
+      : [];
+
+    let price = product.price;
+    const sizeOption = (product.size_options || []).find((o) =>
+      customizations.includes(o.size)
+    );
+    if (sizeOption) {
+      price = sizeOption.price;
+    }
+    if (price == null) {
+      return { error: `${product.name} isn't available for online ordering` };
+    }
+
+    items.push({
+      item_id: product.id,
+      name: product.name,
+      price,
+      quantity,
+      customizations,
+      special_instructions: String(line.special_instructions || "").slice(
+        0,
+        200
+      ),
+      image_url: product.image_url,
+      subtotal: roundMoney(price * quantity),
+    });
+  }
+  return { items };
+};
+
+// Resolve a promo code: published deals first, then personal codes
+// (e.g. loyalty redemptions) stored in the discount_codes collection.
+const resolveDiscount = async (rawCode, subtotal, user) => {
+  const code = String(rawCode).trim().toUpperCase();
+  const deal = DEALS.find(
+    (d) => d.is_active && d.code && d.code.toUpperCase() === code
+  );
+
+  if (deal) {
+    if (new Date(deal.valid_until) < new Date()) {
+      return { error: "This offer has expired" };
+    }
+    if (deal.min_order_amount && subtotal < deal.min_order_amount) {
+      return {
+        error: `This code needs a minimum spend of £${deal.min_order_amount.toFixed(
+          2
+        )}`,
+      };
+    }
+    if (deal.first_order_only) {
+      if (!user) {
+        return { error: "Sign in to use your first-order discount" };
+      }
+      const previousOrders = await db
+        .collection("orders")
+        .countDocuments({ user_id: user.id, status: { $ne: "cancelled" } });
+      if (previousOrders > 0) {
+        return { error: "This code is for your first order only" };
+      }
+    }
+    if (user && deal.once_per_customer !== false) {
+      if ((user.used_discount_codes || []).includes(code)) {
+        return { error: "You've already used this code" };
+      }
+    }
+    const discount = deal.discount_percentage
+      ? (subtotal * deal.discount_percentage) / 100
+      : deal.discount_amount || 0;
+    return {
+      code,
+      discount: roundMoney(Math.min(discount, subtotal)),
+      description: deal.title,
+    };
+  }
+
+  const result = await applyDiscountCode(code, subtotal, user?.id || null);
+  if (result.error) {
+    return { error: result.error };
+  }
+  return {
+    code,
+    discount: roundMoney(Math.min(result.discount, subtotal)),
+    description:
+      result.code.type === "loyalty_redemption"
+        ? "Loyalty reward"
+        : "Promo code",
+    record: result.code,
+  };
+};
+
+// Short, human-friendly order numbers (#1001, #1002, ...).
+const nextOrderNumber = async () => {
+  const counter = await db
+    .collection("counters")
+    .findOneAndUpdate(
+      { id: "order_number" },
+      { $inc: { value: 1 } },
+      { upsert: true, returnDocument: "after" }
+    );
+  return 1000 + (counter?.value || 1);
+};
+
+// Status flow differs for collection vs delivery orders.
+const statusFlowFor = (orderType) =>
+  orderType === "delivery"
+    ? ["pending", "confirmed", "preparing", "ready", "out_for_delivery", "delivered"]
+    : ["pending", "confirmed", "preparing", "ready", "completed"];
+
+// Demo mode: move an order along its flow based on elapsed minutes.
+const DEMO_STEP_MINUTES = { pending: 1, confirmed: 1, preparing: 3, ready: 2, out_for_delivery: 3 };
+const autoProgressOrder = async (order) => {
+  if (!DEMO_AUTO_PROGRESS || ["cancelled", "delivered", "completed"].includes(order.status)) {
+    return order;
+  }
+  const flow = statusFlowFor(order.order_type);
+  let index = flow.indexOf(order.status);
+  if (index < 0) return order;
+  let lastChange = new Date(order.updated_at || order.created_at).getTime();
+  const history = [];
+  while (index < flow.length - 1) {
+    const due = lastChange + (DEMO_STEP_MINUTES[flow[index]] || 1) * 60000;
+    if (Date.now() < due) break;
+    index += 1;
+    lastChange = due;
+    const info = ORDER_STATUSES.find((s) => s.status === flow[index]);
+    history.push({ status: info.status, label: info.label, timestamp: new Date(due) });
+  }
+  if (history.length === 0) return order;
+  const latest = history[history.length - 1];
+  await db.collection("orders").updateOne(
+    { id: order.id },
+    {
+      $set: { status: latest.status, status_label: latest.label, updated_at: latest.timestamp },
+      $push: { status_history: { $each: history } },
+    }
+  );
+  if (["delivered", "completed"].includes(latest.status)) {
+    await awardOrderPoints(order);
+  }
+  return {
+    ...order,
+    status: latest.status,
+    status_label: latest.label,
+    updated_at: latest.timestamp,
+    status_history: [...(order.status_history || []), ...history],
+  };
+};
+
+// Credit loyalty points and customer stats once an order is fulfilled.
+const awardOrderPoints = async (order) => {
+  if (!order.user_id || order.points_awarded) return;
+  const claimed = await db
+    .collection("orders")
+    .updateOne(
+      { id: order.id, points_awarded: { $ne: true } },
+      { $set: { points_awarded: true, completed_at: new Date() } }
+    );
+  if (claimed.modifiedCount === 0) return;
+
+  const user = await db.collection("users").findOne({ id: order.user_id });
+  const currentTier = tierForSpend(user?.total_spent || 0);
+  const pointsEarned = Math.floor(order.total * TIER_POINTS_PER_POUND[currentTier]);
+  await db.collection("users").updateOne(
+    { id: order.user_id },
+    {
+      $inc: {
+        loyalty_points: pointsEarned,
+        total_points_earned: pointsEarned,
+        total_orders: 1,
+        total_spent: order.total,
+      },
+      $set: { tier: tierForSpend((user?.total_spent || 0) + order.total) },
+    }
+  );
+  await db.collection("loyalty_transactions").insertOne({
+    id: uuidv4(),
+    user_id: order.user_id,
+    type: "order_points",
+    points: pointsEarned,
+    description: `Points earned from order #${order.order_number || order.id.slice(0, 8)}`,
+    order_id: order.id,
+    created_at: new Date(),
+  });
+};
+
+// Tiers follow lifetime spend, matching GET /api/loyalty/balance.
+const tierForSpend = (totalSpent) =>
+  totalSpent >= 500 ? "Gold" : totalSpent >= 200 ? "Silver" : "Bronze";
+const TIER_POINTS_PER_POUND = { Bronze: POINTS_PER_POUND, Silver: 12, Gold: 15 };
+
 const applyDiscountCode = async (code, subtotal, userId) => {
   const discountCode = await db.collection("discount_codes").findOne({
     code: code.toUpperCase(),
@@ -3847,6 +3308,21 @@ const applyDiscountCode = async (code, subtotal, userId) => {
 // Health check routes
 app.get("/api/", (req, res) => {
   res.json({ message: "Welcome to Naan Staap API", status: "healthy" });
+});
+
+// Ordering rules the app shows at checkout (the server still enforces them).
+app.get("/api/config", optionalAuthMiddleware, (req, res) => {
+  const isGold =
+    req.user && tierForSpend(req.user.total_spent || 0) === "Gold";
+  res.json({
+    delivery_fee: DELIVERY_FEE,
+    free_delivery_threshold: isGold
+      ? Math.min(20, FREE_DELIVERY_THRESHOLD)
+      : FREE_DELIVERY_THRESHOLD,
+    min_order_amount: MIN_ORDER_AMOUNT,
+    points_per_pound: POINTS_PER_POUND,
+    support_email: "hello@naanstaap.co.uk",
+  });
 });
 
 app.get("/api/health", (req, res) => {
@@ -3914,24 +3390,30 @@ app.get("/api/chai/:chaiId", (req, res) => {
 // ========================================
 
 // Get all stores
+// Opening status uses UK time regardless of where the server runs.
+const withOpenStatus = (store) => {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const get = (type) => parts.find((p) => p.type === type)?.value;
+  const currentDay = get("weekday");
+  const currentTime = `${get("hour")}:${get("minute")}`;
+  const todayHours = store.hours.find((h) => h.day === currentDay);
+  let isOpen = false;
+  if (todayHours && !todayHours.is_closed) {
+    // A close time of 00:00 means midnight.
+    const close = todayHours.close_time === "00:00" ? "24:00" : todayHours.close_time;
+    isOpen = currentTime >= todayHours.open_time && currentTime < close;
+  }
+  return { ...store, is_open_now: isOpen };
+};
+
 app.get("/api/stores", (req, res) => {
-  // Update is_open_now based on current time
-  const now = new Date();
-  const currentDay = now.toLocaleDateString("en-US", { weekday: "long" });
-  const currentTime = now.toTimeString().slice(0, 5);
-
-  const storesWithStatus = STORES.map((store) => {
-    const todayHours = store.hours.find((h) => h.day === currentDay);
-    let isOpen = false;
-    if (todayHours && !todayHours.is_closed) {
-      isOpen =
-        currentTime >= todayHours.open_time &&
-        currentTime <= todayHours.close_time;
-    }
-    return { ...store, is_open_now: isOpen };
-  });
-
-  res.json(storesWithStatus);
+  res.json(STORES.map(withOpenStatus));
 });
 
 // Get single store
@@ -3941,7 +3423,12 @@ app.get("/api/stores/:storeId", (req, res) => {
   if (!store) {
     return res.status(404).json({ detail: "Store not found" });
   }
-  res.json(store);
+  res.json(withOpenStatus(store));
+});
+
+// Allergen guide (14 UK allergens per dish)
+app.get("/api/allergens", (req, res) => {
+  res.json(ALLERGENS);
 });
 
 // ========================================
@@ -4176,40 +3663,204 @@ app.delete("/api/favorites/:userId/:itemId", (req, res) => {
 // ========================================
 
 // Subscribe to newsletter
-app.post("/api/newsletter/subscribe", (req, res) => {
-  const { email } = req.body;
-
-  if (!email || !validateEmail(email)) {
-    return res.status(400).json({ detail: "Valid email is required" });
+app.post("/api/newsletter/subscribe", async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    if (!validateEmail(email)) {
+      return res.status(400).json({ detail: "Valid email is required" });
+    }
+    const existing = await db.collection("newsletter").findOne({ email });
+    if (existing?.is_active) {
+      return res.status(400).json({ detail: "You're already subscribed" });
+    }
+    await db.collection("newsletter").updateOne(
+      { email },
+      {
+        $set: { is_active: true, subscribed_at: new Date() },
+        $setOnInsert: { id: uuidv4(), email },
+      },
+      { upsert: true }
+    );
+    res.json({ message: "Successfully subscribed to newsletter!" });
+  } catch (error) {
+    console.error("Error subscribing to newsletter:", error);
+    res.status(500).json({ detail: "Error subscribing to newsletter" });
   }
-
-  if (newsletterSubscribers.find((s) => s.email === email.toLowerCase())) {
-    return res.status(400).json({ detail: "Email already subscribed" });
-  }
-
-  newsletterSubscribers.push({
-    id: uuidv4(),
-    email: email.toLowerCase(),
-    subscribed_at: new Date(),
-    is_active: true,
-  });
-
-  res.json({ message: "Successfully subscribed to newsletter!" });
 });
 
-// Unsubscribe from newsletter
-app.post("/api/newsletter/unsubscribe", (req, res) => {
-  const { email } = req.body;
-
-  const index = newsletterSubscribers.findIndex(
-    (s) => s.email === email.toLowerCase()
-  );
-  if (index === -1) {
-    return res.status(404).json({ detail: "Email not found in subscribers" });
+app.post("/api/newsletter/unsubscribe", async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const result = await db
+      .collection("newsletter")
+      .updateOne(
+        { email },
+        { $set: { is_active: false, unsubscribed_at: new Date() } }
+      );
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ detail: "Email not found in subscribers" });
+    }
+    res.json({ message: "Successfully unsubscribed from newsletter" });
+  } catch (error) {
+    console.error("Error unsubscribing from newsletter:", error);
+    res.status(500).json({ detail: "Error unsubscribing from newsletter" });
   }
+});
 
-  newsletterSubscribers[index].is_active = false;
-  res.json({ message: "Successfully unsubscribed from newsletter" });
+// ========================================
+// TABLE BOOKINGS
+// ========================================
+
+const BOOKING_TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+const BOOKING_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+app.post("/api/bookings", optionalAuthMiddleware, async (req, res) => {
+  try {
+    const {
+      store_id,
+      customer_name,
+      customer_phone,
+      customer_email,
+      date,
+      time,
+      party_size,
+      special_requests,
+    } = req.body;
+
+    if (!customer_name || !customer_phone || !date || !time) {
+      return res
+        .status(400)
+        .json({ detail: "Name, phone, date and time are required" });
+    }
+    const store = STORES.find((s) => s.id === store_id);
+    if (!store) {
+      return res.status(400).json({ detail: "Please choose a store" });
+    }
+    if (!BOOKING_DATE_PATTERN.test(date) || !BOOKING_TIME_PATTERN.test(time)) {
+      return res.status(400).json({ detail: "Invalid date or time" });
+    }
+    const when = new Date(`${date}T${time}:00`);
+    if (Number.isNaN(when.getTime()) || when.getTime() < Date.now()) {
+      return res
+        .status(400)
+        .json({ detail: "Please choose a date and time in the future" });
+    }
+    const size = parseInt(party_size, 10);
+    if (!Number.isInteger(size) || size < 1 || size > 20) {
+      return res
+        .status(400)
+        .json({ detail: "Party size must be between 1 and 20" });
+    }
+    if (customer_email && !validateEmail(customer_email)) {
+      return res.status(400).json({ detail: "Invalid email format" });
+    }
+
+    const booking = {
+      id: uuidv4(),
+      user_id: req.user?.id || null,
+      store_id: store.id,
+      store_name: store.name,
+      customer_name,
+      customer_phone,
+      customer_email: customer_email || null,
+      date,
+      time,
+      party_size: size,
+      special_requests: special_requests || "",
+      status: "requested",
+      created_at: new Date(),
+    };
+    await db.collection("bookings").insertOne(booking);
+
+    res.status(201).json({
+      id: booking.id,
+      status: booking.status,
+      store_name: store.name,
+      message:
+        "Booking request received. The store will confirm by phone if anything changes.",
+    });
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    res.status(500).json({ detail: "Error creating booking" });
+  }
+});
+
+app.get("/api/bookings", authMiddleware, async (req, res) => {
+  try {
+    const bookings = await db
+      .collection("bookings")
+      .find({ user_id: req.user.id })
+      .sort({ date: -1, time: -1 })
+      .limit(50)
+      .toArray();
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error getting bookings:", error);
+    res.status(500).json({ detail: "Error getting bookings" });
+  }
+});
+
+app.post("/api/bookings/:bookingId/cancel", authMiddleware, async (req, res) => {
+  try {
+    const booking = await db
+      .collection("bookings")
+      .findOne({ id: req.params.bookingId, user_id: req.user.id });
+    if (!booking) {
+      return res.status(404).json({ detail: "Booking not found" });
+    }
+    await db
+      .collection("bookings")
+      .updateOne(
+        { id: booking.id },
+        { $set: { status: "cancelled", updated_at: new Date() } }
+      );
+    res.json({ message: "Booking cancelled" });
+  } catch (error) {
+    console.error("Error cancelling booking:", error);
+    res.status(500).json({ detail: "Error cancelling booking" });
+  }
+});
+
+// ========================================
+// ENQUIRIES (franchise, catering, careers)
+// ========================================
+
+const ENQUIRY_TYPES = ["franchise", "catering", "career"];
+
+app.post("/api/enquiries", async (req, res) => {
+  try {
+    const { type, name, email, phone, message, details } = req.body;
+    if (!ENQUIRY_TYPES.includes(type)) {
+      return res.status(400).json({ detail: "Invalid enquiry type" });
+    }
+    if (!name || !email || !phone) {
+      return res
+        .status(400)
+        .json({ detail: "Name, email and phone are required" });
+    }
+    if (!validateEmail(email)) {
+      return res.status(400).json({ detail: "Invalid email format" });
+    }
+    const enquiry = {
+      id: uuidv4(),
+      type,
+      name,
+      email,
+      phone,
+      message: message || "",
+      details: details && typeof details === "object" ? details : {},
+      status: "new",
+      created_at: new Date(),
+    };
+    await db.collection("enquiries").insertOne(enquiry);
+    res.status(201).json({
+      id: enquiry.id,
+      message: "Thanks! Our team will be in touch shortly.",
+    });
+  } catch (error) {
+    console.error("Error submitting enquiry:", error);
+    res.status(500).json({ detail: "Error submitting enquiry" });
+  }
 });
 
 // ========================================
@@ -4260,6 +3911,17 @@ app.post("/api/contact", async (req, res) => {
 // ========================================
 
 const startServer = async () => {
+  // Refuse to run in production with the built-in placeholder secrets.
+  if (
+    process.env.NODE_ENV === "production" &&
+    (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET || !STAFF_API_KEY)
+  ) {
+    console.error(
+      "JWT_SECRET, JWT_REFRESH_SECRET and STAFF_API_KEY must be set in production."
+    );
+    process.exit(1);
+  }
+
   try {
     const client = new MongoClient(mongoUrl);
     await client.connect();

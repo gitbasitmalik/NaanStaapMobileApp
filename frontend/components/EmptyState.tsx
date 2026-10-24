@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme, BRAND } from "../theme/ThemeContext";
 
-const BRAND_PURPLE = "#6B2C5F";
+const BRAND_PRIMARY = BRAND.orange;
 
 interface EmptyStateProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: 24,
-    backgroundColor: BRAND_PURPLE,
+    backgroundColor: BRAND_PRIMARY,
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
