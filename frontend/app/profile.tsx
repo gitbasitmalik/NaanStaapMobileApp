@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,70 +6,88 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
   Share,
   RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useTheme } from "../theme/ThemeContext";
+import Constants from "expo-constants";
+import { useTheme, BRAND } from "../theme/ThemeContext";
 import { useAuthStore } from "../store/authStore";
 import { useLoyaltyStore } from "../store/loyaltyStore";
 import { useOrdersStore } from "../store/ordersStore";
+import { useFavoritesStore } from "../store/favoritesStore";
+import { FadeInView, SlideInView } from "../components/AnimatedComponents";
+import { EmptyState } from "../components/EmptyState";
+import { useToast } from "../components/Toast";
 import {
-  AnimatedButton,
-  FadeInView,
-  SlideInView,
-} from "../components/AnimatedComponents";
+  BrandButton,
+  Card,
+  ListRow,
+  ScreenHeader,
+  SectionHeading,
+  formatPrice,
+} from "../components/ui";
 import { lightHaptic, successHaptic } from "../utils/haptics";
 
-const BRAND_PURPLE = "#6B2C5F";
-const BRAND_GOLD = "#D4A84B";
+type IconName = keyof typeof Ionicons.glyphMap;
+
+const tierStyle = (tier: string): { color: string; icon: IconName } => {
+  switch (tier.toLowerCase()) {
+    case "gold":
+      return { color: BRAND.gold, icon: "trophy" };
+    case "silver":
+      return { color: "rgba(255,255,255,0.85)", icon: "medal" };
+    default:
+      return { color: BRAND.orange, icon: "ribbon" };
+  }
+};
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { colors, isDark, toggleTheme } = useTheme();
-  const {
-    user,
-    isAuthenticated,
-    logout,
-    isLoading: authLoading,
-  } = useAuthStore();
-  const { balance, referralInfo, fetchBalance, fetchReferralInfo } =
-    useLoyaltyStore();
+  const { colors } = useTheme();
+  const { showToast } = useToast();
+  const { user, isAuthenticated, logout, refreshUserData } = useAuthStore();
+  const { balance, referralInfo, fetchBalance, fetchReferralInfo } = useLoyaltyStore();
   const { summary, fetchOrders } = useOrdersStore();
+  const favouriteCount = useFavoritesStore((s) => s.favorites.length);
   const [refreshing, setRefreshing] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const loadData = useCallback(async () => {
-    await Promise.all([
-      fetchBalance(),
-      fetchReferralInfo(),
-      fetchOrders({ page: 1 }),
-    ]);
-  }, [fetchBalance, fetchReferralInfo, fetchOrders]);
+    await Promise.all([fetchBalance(), fetchReferralInfo(), fetchOrders({ page: 1 }), refreshUserData()]);
+  }, [fetchBalance, fetchReferralInfo, fetchOrders, refreshUserData]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadData();
-    }
+    if (isAuthenticated) loadData();
   }, [isAuthenticated, loadData]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
+    const err = useLoyaltyStore.getState().error || useOrdersStore.getState().error;
+    if (err) showToast({ message: err, type: "error" });
+  };
+
+  const go = (path: Parameters<typeof router.push>[0]) => {
+    lightHaptic();
+    router.push(path);
   };
 
   const handleLogout = () => {
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+    Alert.alert("Sign out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
       {
-        text: "Sign Out",
+        text: "Sign out",
         style: "destructive",
         onPress: async () => {
+          setSigningOut(true);
           await logout();
+          setSigningOut(false);
+          showToast({ message: "You've been signed out", type: "info" });
           router.replace("/");
         },
       },
@@ -78,80 +96,35 @@ export default function ProfileScreen() {
 
   const handleShareReferral = async () => {
     if (!referralInfo) return;
-
     try {
-      await Share.share({
+      const result = await Share.share({
         message: referralInfo.share_message,
-        title: "Join Naan Staap!",
+        title: "Join Naan Staap",
       });
-      successHaptic();
-    } catch (error) {
-      console.error("Error sharing:", error);
-    }
-  };
-
-  const getTierColor = (tier: string) => {
-    switch (tier.toLowerCase()) {
-      case "gold":
-        return "#FFD700";
-      case "silver":
-        return "#C0C0C0";
-      default:
-        return "#CD7F32";
-    }
-  };
-
-  const getTierIcon = (tier: string) => {
-    switch (tier.toLowerCase()) {
-      case "gold":
-        return "trophy";
-      case "silver":
-        return "medal";
-      default:
-        return "ribbon";
+      if (result.action === Share.sharedAction) successHaptic();
+    } catch {
+      showToast({ message: "Couldn't open the share sheet", type: "error" });
     }
   };
 
   if (!isAuthenticated) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background, paddingTop: insets.top },
-        ]}
-      >
-        <View style={styles.notAuthContainer}>
-          <View style={styles.notAuthIcon}>
-            <Ionicons
-              name="person-circle-outline"
-              size={100}
-              color={colors.textMuted}
-            />
-          </View>
-          <Text style={[styles.notAuthTitle, { color: colors.text }]}>
-            Sign in to your account
-          </Text>
-          <Text style={[styles.notAuthSubtitle, { color: colors.textMuted }]}>
-            Access your orders, loyalty points, and exclusive offers
-          </Text>
-          <AnimatedButton
-            style={styles.signInButton}
-            onPress={() => {
-              lightHaptic();
-              router.push("/auth/login");
-            }}
-          >
-            <Text style={styles.signInButtonText}>Sign In</Text>
-          </AnimatedButton>
-          <TouchableOpacity
-            style={styles.createAccountLink}
-            onPress={() => {
-              lightHaptic();
-              router.push("/auth/register");
-            }}
-          >
-            <Text style={[styles.createAccountText, { color: BRAND_GOLD }]}>
-              Create an account
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScreenHeader title="My account" />
+        <EmptyState
+          icon="person-circle-outline"
+          title="Sign in to your account"
+          message="See your orders, loyalty points, saved addresses and member offers."
+          actionLabel="Sign in"
+          onAction={() => go("/auth/login")}
+        />
+        <View style={[styles.guestLinks, { paddingBottom: insets.bottom + 24 }]}>
+          <TouchableOpacity onPress={() => go("/auth/register")} hitSlop={8}>
+            <Text style={styles.goldLink}>Create an account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => go("/favorites")} hitSlop={8} style={{ marginTop: 14 }}>
+            <Text style={[styles.mutedLink, { color: colors.textSecondary }]}>
+              View my favourites{favouriteCount ? ` (${favouriteCount})` : ""}
             </Text>
           </TouchableOpacity>
         </View>
@@ -159,683 +132,253 @@ export default function ProfileScreen() {
     );
   }
 
+  const tierName = balance?.tier || user?.tier || "Bronze";
+  const tier = tierStyle(tierName);
+  const points = balance?.points ?? user?.loyalty_points ?? 0;
+  const pointsValue = balance?.redeemable_value ?? Math.floor(points) / 100;
+  const tierProgress = Math.max(0, Math.min(1, balance?.tier_progress ?? 0));
+
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={{
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom + 20,
-      }}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={BRAND_GOLD}
-        />
-      }
-    >
-      {/* Header */}
-      <FadeInView style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            lightHaptic();
-            router.back();
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          My Profile
-        </Text>
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => {
-            lightHaptic();
-            // Navigate to settings
-          }}
-        >
-          <Ionicons name="settings-outline" size={24} color={colors.text} />
-        </TouchableOpacity>
-      </FadeInView>
-
-      {/* Profile Card */}
-      <SlideInView direction="bottom" delay={100} style={styles.profileCard}>
-        <View
-          style={[styles.profileCardInner, { backgroundColor: colors.surface }]}
-        >
-          <View style={styles.avatarContainer}>
-            <View style={[styles.avatar, { backgroundColor: BRAND_PURPLE }]}>
-              <Text style={styles.avatarText}>
-                {user?.name?.charAt(0).toUpperCase() || "U"}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.tierBadge,
-                { backgroundColor: getTierColor(balance?.tier || "Bronze") },
-              ]}
-            >
-              <Ionicons
-                name={getTierIcon(balance?.tier || "Bronze") as any}
-                size={12}
-                color="#FFF"
-              />
-            </View>
-          </View>
-          <Text style={[styles.userName, { color: colors.text }]}>
-            {user?.name}
-          </Text>
-          <Text style={[styles.userEmail, { color: colors.textMuted }]}>
-            {user?.email}
-          </Text>
-
-          <View style={styles.tierContainer}>
-            <Text
-              style={[
-                styles.tierText,
-                { color: getTierColor(balance?.tier || "Bronze") },
-              ]}
-            >
-              {balance?.tier || "Bronze"} Member
-            </Text>
-          </View>
-        </View>
-      </SlideInView>
-
-      {/* Loyalty Points */}
-      <SlideInView direction="bottom" delay={200}>
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Loyalty Points
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                lightHaptic();
-                router.push("/loyalty");
-              }}
-            >
-              <Text style={[styles.seeAllText, { color: BRAND_GOLD }]}>
-                See all
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.pointsCard}>
-            <View style={[styles.pointsCircle, { borderColor: BRAND_GOLD }]}>
-              <Text style={[styles.pointsNumber, { color: BRAND_GOLD }]}>
-                {balance?.points?.toLocaleString() || 0}
-              </Text>
-              <Text style={[styles.pointsLabel, { color: colors.textMuted }]}>
-                Points
-              </Text>
-            </View>
-
-            <View style={styles.pointsInfo}>
-              <View style={styles.pointsRow}>
-                <Text
-                  style={[styles.pointsInfoLabel, { color: colors.textMuted }]}
-                >
-                  Value
-                </Text>
-                <Text style={[styles.pointsInfoValue, { color: colors.text }]}>
-                  £{((balance?.points || 0) / 100).toFixed(2)}
-                </Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScreenHeader title="My account" />
+      <ScrollView
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={BRAND.gold} />
+        }
+      >
+        {/* Profile */}
+        <FadeInView>
+          <Card style={styles.profileCard}>
+            <View style={styles.avatarWrap}>
+              <View style={[styles.avatar, { backgroundColor: BRAND.orange }]}>
+                <Text style={styles.avatarText}>{user?.name?.charAt(0).toUpperCase() || "N"}</Text>
               </View>
-              {balance?.next_tier && (
-                <View style={styles.pointsRow}>
-                  <Text
-                    style={[
-                      styles.pointsInfoLabel,
-                      { color: colors.textMuted },
-                    ]}
-                  >
-                    To {balance.next_tier}
-                  </Text>
-                  <Text
-                    style={[styles.pointsInfoValue, { color: colors.text }]}
-                  >
-                    {balance.points_to_next_tier} pts
+              <View style={[styles.tierBadge, { backgroundColor: tier.color, borderColor: colors.surface }]}>
+                <Ionicons name={tier.icon} size={12} color={BRAND.purpleDeep} />
+              </View>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>
+                {user?.name}
+              </Text>
+              <Text style={[styles.userEmail, { color: colors.textMuted }]} numberOfLines={1}>
+                {user?.email}
+              </Text>
+              <Text style={[styles.tierText, { color: tier.color }]}>{tierName} member</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => go("/edit-profile")}
+              hitSlop={10}
+              accessibilityLabel="Edit profile"
+              style={styles.editBtn}
+            >
+              <Ionicons name="create-outline" size={20} color={BRAND.gold} />
+            </TouchableOpacity>
+          </Card>
+        </FadeInView>
+
+        {/* Loyalty */}
+        <SlideInView direction="bottom" delay={80}>
+          <TouchableOpacity activeOpacity={0.85} onPress={() => go("/loyalty")}>
+            <Card style={styles.loyaltyCard}>
+              <View style={styles.loyaltyTop}>
+                <View>
+                  <Text style={[styles.cardKicker, { color: colors.textMuted }]}>Loyalty points</Text>
+                  <Text style={styles.pointsNumber}>{points.toLocaleString()}</Text>
+                  <Text style={[styles.pointsValue, { color: colors.textSecondary }]}>
+                    Worth {formatPrice(pointsValue)}
                   </Text>
                 </View>
-              )}
-              <View style={styles.progressBar}>
-                <View
-                  style={[
-                    styles.progressFill,
-                    { width: `${(balance?.tier_progress || 0) * 100}%` },
-                  ]}
+                <View style={styles.loyaltyCta}>
+                  <Text style={styles.loyaltyCtaText}>View rewards</Text>
+                  <Ionicons name="chevron-forward" size={16} color={BRAND.gold} />
+                </View>
+              </View>
+              {balance?.next_tier ? (
+                <>
+                  <View style={[styles.progressTrack, { backgroundColor: colors.surfaceLight }]}>
+                    <View style={[styles.progressFill, { width: `${tierProgress * 100}%` }]} />
+                  </View>
+                  <Text style={[styles.progressText, { color: colors.textMuted }]}>
+                    Spend {formatPrice(balance.spend_to_next_tier)} more to reach {balance.next_tier}
+                  </Text>
+                </>
+              ) : balance ? (
+                <Text style={[styles.progressText, { color: colors.textMuted }]}>
+                  You’re at our top tier. Thank you for being a regular!
+                </Text>
+              ) : null}
+            </Card>
+          </TouchableOpacity>
+        </SlideInView>
+
+        {/* Stats */}
+        <SlideInView direction="bottom" delay={140}>
+          <Card style={styles.stats}>
+            <Stat value={String(summary?.total_orders ?? user?.total_orders ?? 0)} label="Orders" />
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <Stat value={formatPrice(summary?.total_spent ?? user?.total_spent ?? 0)} label="Spent" />
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <Stat value={String(referralInfo?.referral_count ?? 0)} label="Referrals" />
+          </Card>
+        </SlideInView>
+
+        {/* Referral */}
+        {referralInfo ? (
+          <SlideInView direction="bottom" delay={200}>
+            <View style={styles.referralCard}>
+              <View style={styles.referralHead}>
+                <Ionicons name="gift" size={30} color={BRAND.gold} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.referralTitle}>Refer a friend</Text>
+                  <Text style={styles.referralSubtitle}>
+                    You get {referralInfo.reward_per_referral} points, they get {referralInfo.referee_bonus}.
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.codeRow}>
+                <View style={styles.codeBox}>
+                  <Text style={styles.codeLabel}>Your code</Text>
+                  <Text style={styles.code} selectable>
+                    {referralInfo.referral_code}
+                  </Text>
+                </View>
+                <BrandButton
+                  title="Share"
+                  icon="share-social"
+                  variant="gold"
+                  size="sm"
+                  onPress={handleShareReferral}
                 />
               </View>
             </View>
-          </View>
-        </View>
-      </SlideInView>
+          </SlideInView>
+        ) : null}
 
-      {/* Quick Stats */}
-      <SlideInView direction="bottom" delay={300}>
-        <View
-          style={[styles.statsContainer, { backgroundColor: colors.surface }]}
-        >
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              {summary?.total_orders || 0}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>
-              Orders
-            </Text>
-          </View>
-          <View
-            style={[styles.statDivider, { backgroundColor: colors.border }]}
-          />
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              £{(summary?.total_spent || 0).toFixed(0)}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>
-              Spent
-            </Text>
-          </View>
-          <View
-            style={[styles.statDivider, { backgroundColor: colors.border }]}
-          />
-          <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              {referralInfo?.referral_count || 0}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>
-              Referrals
-            </Text>
-          </View>
-        </View>
-      </SlideInView>
-
-      {/* Referral Card */}
-      {referralInfo && (
-        <SlideInView direction="bottom" delay={400}>
-          <View
-            style={[styles.referralCard, { backgroundColor: BRAND_PURPLE }]}
-          >
-            <View style={styles.referralContent}>
-              <Ionicons name="gift" size={32} color={BRAND_GOLD} />
-              <View style={styles.referralText}>
-                <Text style={styles.referralTitle}>Refer & Earn</Text>
-                <Text style={styles.referralSubtitle}>
-                  Get {referralInfo.reward_per_referral} points for each friend
-                </Text>
-              </View>
-            </View>
-            <View style={styles.referralCodeContainer}>
-              <Text style={styles.referralCodeLabel}>Your code:</Text>
-              <Text style={styles.referralCode}>
-                {referralInfo.referral_code}
-              </Text>
-            </View>
-            <AnimatedButton
-              style={styles.shareButton}
-              onPress={handleShareReferral}
-            >
-              <Ionicons name="share-social" size={18} color={BRAND_PURPLE} />
-              <Text style={styles.shareButtonText}>Share</Text>
-            </AnimatedButton>
-          </View>
+        {/* Activity */}
+        <SlideInView direction="bottom" delay={260}>
+          <SectionHeading title="Your activity" style={styles.sectionHeading} />
+          <Card style={styles.listCard}>
+            <ListRow icon="receipt-outline" label="Order history" onPress={() => go("/orders")} />
+            <ListRow icon="location-outline" label="Saved addresses" onPress={() => go("/addresses")} />
+            <ListRow
+              icon="heart-outline"
+              label="Favourites"
+              subtitle={favouriteCount ? `${favouriteCount} saved` : undefined}
+              onPress={() => go("/favorites")}
+            />
+            <ListRow icon="star-outline" label="My reviews" onPress={() => go("/my-reviews")} />
+            <ListRow icon="calendar-outline" label="My bookings" onPress={() => go("/bookings")} />
+          </Card>
         </SlideInView>
-      )}
 
-      {/* Menu Options */}
-      <SlideInView direction="bottom" delay={500}>
-        <View style={[styles.menuSection, { backgroundColor: colors.surface }]}>
-          <MenuItem
-            icon="receipt-outline"
-            label="Order History"
-            onPress={() => {
-              lightHaptic();
-              router.push("/orders");
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon="location-outline"
-            label="Saved Addresses"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert(
-                "Coming Soon",
-                "Saved addresses feature is coming soon!"
-              );
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon="heart-outline"
-            label="Favorites"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert("Coming Soon", "Favorites feature is coming soon!");
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon="star-outline"
-            label="My Reviews"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert("Coming Soon", "Reviews feature is coming soon!");
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon="notifications-outline"
-            label="Notifications"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert("Coming Soon", "Notifications settings coming soon!");
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon={isDark ? "sunny-outline" : "moon-outline"}
-            label={isDark ? "Light Mode" : "Dark Mode"}
-            onPress={() => {
-              lightHaptic();
-              toggleTheme();
-            }}
-            colors={colors}
-            showChevron={false}
-          />
-        </View>
-      </SlideInView>
+        {/* Settings */}
+        <SlideInView direction="bottom" delay={320}>
+          <SectionHeading title="Settings" style={styles.sectionHeading} />
+          <Card style={styles.listCard}>
+            <ListRow icon="person-outline" label="Edit profile" onPress={() => go("/edit-profile")} />
+            <ListRow icon="lock-closed-outline" label="Change password" onPress={() => go("/change-password")} />
+            <ListRow
+              icon="notifications-outline"
+              label="Notifications & preferences"
+              subtitle="Alerts, dietary needs and allergens"
+              onPress={() => go("/notifications")}
+            />
+            <ListRow
+              icon="shield-checkmark-outline"
+              label="Privacy & account"
+              onPress={() => go("/account-privacy")}
+            />
+          </Card>
+        </SlideInView>
 
-      {/* Account Actions */}
-      <SlideInView direction="bottom" delay={600}>
-        <View style={[styles.menuSection, { backgroundColor: colors.surface }]}>
-          <MenuItem
-            icon="person-outline"
-            label="Edit Profile"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert(
-                "Coming Soon",
-                "Edit profile feature is coming soon!"
-              );
-            }}
-            colors={colors}
+        <SlideInView direction="bottom" delay={380}>
+          <BrandButton
+            title="Sign out"
+            icon="log-out-outline"
+            variant="outline"
+            onPress={handleLogout}
+            loading={signingOut}
+            style={styles.signOut}
           />
-          <MenuItem
-            icon="lock-closed-outline"
-            label="Change Password"
-            onPress={() => {
-              lightHaptic();
-              Alert.alert(
-                "Coming Soon",
-                "Password change feature will be available soon."
-              );
-            }}
-            colors={colors}
-          />
-          <MenuItem
-            icon="shield-checkmark-outline"
-            label="Privacy & Security"
-            onPress={() => lightHaptic()}
-            colors={colors}
-          />
-        </View>
-      </SlideInView>
-
-      {/* Logout */}
-      <SlideInView direction="bottom" delay={700} style={styles.logoutSection}>
-        <AnimatedButton
-          style={[styles.logoutButton, { borderColor: "#E53935" }]}
-          onPress={handleLogout}
-        >
-          {authLoading ? (
-            <ActivityIndicator color="#E53935" />
-          ) : (
-            <>
-              <Ionicons name="log-out-outline" size={20} color="#E53935" />
-              <Text style={styles.logoutText}>Sign Out</Text>
-            </>
-          )}
-        </AnimatedButton>
-      </SlideInView>
-
-      {/* App Version */}
-      <Text style={[styles.versionText, { color: colors.textMuted }]}>
-        Version 1.0.0
-      </Text>
-    </ScrollView>
+          <Text style={[styles.version, { color: colors.textMuted }]}>
+            Naan Staap · version {Constants.expoConfig?.version ?? "1.0.0"}
+          </Text>
+        </SlideInView>
+      </ScrollView>
+    </View>
   );
 }
 
-interface MenuItemProps {
-  icon: string;
-  label: string;
-  onPress: () => void;
-  colors: any;
-  showChevron?: boolean;
+function Stat({ value, label }: { value: string; label: string }) {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.stat}>
+      <Text style={[styles.statValue, { color: colors.secondary }]} numberOfLines={1}>
+        {value}
+      </Text>
+      <Text style={[styles.statLabel, { color: colors.textMuted }]}>{label}</Text>
+    </View>
+  );
 }
 
-const MenuItem = ({
-  icon,
-  label,
-  onPress,
-  colors,
-  showChevron = true,
-}: MenuItemProps) => (
-  <TouchableOpacity style={styles.menuItem} onPress={onPress}>
-    <View style={styles.menuItemLeft}>
-      <Ionicons name={icon as any} size={22} color={colors.textSecondary} />
-      <Text style={[styles.menuItemLabel, { color: colors.text }]}>
-        {label}
-      </Text>
-    </View>
-    {showChevron && (
-      <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
-    )}
-  </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  settingsButton: {
-    padding: 8,
-  },
-  notAuthContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 32,
-  },
-  notAuthIcon: {
-    marginBottom: 24,
-  },
-  notAuthTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  notAuthSubtitle: {
-    fontSize: 15,
-    textAlign: "center",
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  signInButton: {
-    backgroundColor: BRAND_PURPLE,
-    paddingVertical: 14,
-    paddingHorizontal: 48,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  signInButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  createAccountLink: {
-    padding: 8,
-  },
-  createAccountText: {
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  profileCard: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  profileCardInner: {
-    borderRadius: 16,
-    padding: 24,
-    alignItems: "center",
-  },
-  avatarContainer: {
-    position: "relative",
-    marginBottom: 12,
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarText: {
-    color: "#FFF",
-    fontSize: 32,
-    fontWeight: "bold",
-  },
+  container: { flex: 1 },
+  guestLinks: { alignItems: "center" },
+  goldLink: { color: BRAND.gold, fontSize: 15, fontWeight: "700" },
+  mutedLink: { fontSize: 14, fontWeight: "600", textDecorationLine: "underline" },
+  profileCard: { flexDirection: "row", alignItems: "center", gap: 14, padding: 18 },
+  avatarWrap: { position: "relative" },
+  avatar: { width: 62, height: 62, borderRadius: 31, alignItems: "center", justifyContent: "center" },
+  avatarText: { color: "#FFFFFF", fontSize: 26, fontWeight: "800" },
   tierBadge: {
     position: "absolute",
-    bottom: 0,
-    right: 0,
+    bottom: -2,
+    right: -2,
     width: 24,
     height: 24,
     borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
     borderWidth: 2,
-    borderColor: "#FFF",
-  },
-  userName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  tierContainer: {
-    marginTop: 4,
-  },
-  tierText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  section: {
-    marginHorizontal: 16,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  seeAllText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  pointsCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 20,
-  },
-  pointsCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 3,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pointsNumber: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  pointsLabel: {
-    fontSize: 12,
-  },
-  pointsInfo: {
-    flex: 1,
-  },
-  pointsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  pointsInfoLabel: {
-    fontSize: 13,
-  },
-  pointsInfoValue: {
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: BRAND_GOLD,
-    borderRadius: 3,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    marginHorizontal: 16,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  statNumber: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-  },
-  statDivider: {
-    width: 1,
-    height: "100%",
-  },
-  referralCard: {
-    marginHorizontal: 16,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  referralContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 12,
-  },
-  referralText: {
-    flex: 1,
-  },
-  referralTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  referralSubtitle: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 13,
-  },
-  referralCodeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 12,
-  },
-  referralCodeLabel: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 13,
-  },
-  referralCode: {
-    color: BRAND_GOLD,
-    fontSize: 18,
-    fontWeight: "bold",
-    letterSpacing: 2,
-  },
-  shareButton: {
-    backgroundColor: BRAND_GOLD,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    borderRadius: 8,
-    gap: 6,
   },
-  shareButtonText: {
-    color: BRAND_PURPLE,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  menuSection: {
-    marginHorizontal: 16,
+  userName: { fontSize: 19, fontWeight: "800" },
+  userEmail: { fontSize: 13, marginTop: 2 },
+  tierText: { fontSize: 13, fontWeight: "700", marginTop: 6 },
+  editBtn: { padding: 8, borderRadius: 12, backgroundColor: "rgba(255,215,79,0.12)" },
+  loyaltyCard: { marginTop: 14, padding: 18 },
+  loyaltyTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  cardKicker: { fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 },
+  pointsNumber: { color: BRAND.gold, fontSize: 36, fontWeight: "800", marginTop: 4 },
+  pointsValue: { fontSize: 13, marginTop: 2 },
+  loyaltyCta: { flexDirection: "row", alignItems: "center", gap: 2, marginTop: 4 },
+  loyaltyCtaText: { color: BRAND.gold, fontSize: 13, fontWeight: "700" },
+  progressTrack: { height: 8, borderRadius: 4, overflow: "hidden", marginTop: 16 },
+  progressFill: { height: "100%", backgroundColor: BRAND.gold, borderRadius: 4 },
+  progressText: { fontSize: 12, marginTop: 6 },
+  stats: { flexDirection: "row", marginTop: 14, paddingVertical: 18 },
+  stat: { flex: 1, alignItems: "center" },
+  statValue: { fontSize: 20, fontWeight: "800" },
+  statLabel: { fontSize: 12, marginTop: 4 },
+  statDivider: { width: 1, marginVertical: 4 },
+  referralCard: { marginTop: 14, borderRadius: 18, padding: 18, backgroundColor: BRAND.orange },
+  referralHead: { flexDirection: "row", alignItems: "center", gap: 12 },
+  referralTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "800" },
+  referralSubtitle: { color: "rgba(255,255,255,0.9)", fontSize: 13, marginTop: 2 },
+  codeRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 14 },
+  codeBox: {
+    flex: 1,
+    backgroundColor: "rgba(58,38,64,0.35)",
     borderRadius: 12,
-    marginBottom: 16,
-    overflow: "hidden",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  menuItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  menuItemLabel: {
-    fontSize: 15,
-  },
-  logoutSection: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    gap: 8,
-  },
-  logoutText: {
-    color: "#E53935",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  versionText: {
-    textAlign: "center",
-    fontSize: 12,
-    marginBottom: 20,
-  },
+  codeLabel: { color: "rgba(255,255,255,0.8)", fontSize: 11, fontWeight: "600" },
+  code: { color: "#FFFFFF", fontSize: 18, fontWeight: "800", letterSpacing: 1.5 },
+  sectionHeading: { marginTop: 24, marginBottom: 10 },
+  listCard: { paddingVertical: 2 },
+  signOut: { marginTop: 28 },
+  version: { textAlign: "center", fontSize: 12, marginTop: 16 },
 });

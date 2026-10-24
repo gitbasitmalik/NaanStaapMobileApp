@@ -1,4 +1,4 @@
-// Theme
+ // Theme
 export { ThemeProvider, useTheme, lightTheme, darkTheme } from '../theme/ThemeContext';
 export type { ThemeColors } from '../theme/ThemeContext';
 

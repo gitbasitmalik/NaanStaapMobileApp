@@ -1,6 +1,18 @@
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, tokenService, User } from '../services/api';
+import { authAPI, tokenService, User, apiErrorMessage } from '../services/api';
+import { useLoyaltyStore } from './loyaltyStore';
+import { useOrdersStore } from './ordersStore';
+import { useAddressStore } from './addressStore';
+import { useRecommendationsStore } from './recommendationsStore';
+
+// Per-account data held in other stores; wiped on sign-out so the next person
+// using the device never sees the previous account's orders or points.
+const clearAccountData = () => {
+  useLoyaltyStore.setState({ balance: null, history: [], referralInfo: null, error: null });
+  useOrdersStore.setState({ orders: [], currentOrder: null, summary: null, error: null });
+  useAddressStore.setState({ addresses: [], selectedAddress: null, hasLoaded: false, error: null });
+  useRecommendationsStore.getState().clearRecommendations();
+};
 
 interface AuthState {
   user: User | null;
@@ -24,6 +36,7 @@ interface AuthState {
   updatePreferences: (preferences: {
     dietary_preferences?: string[];
     allergen_alerts?: string[];
+    notification_preferences?: Record<string, boolean>;
   }) => Promise<boolean>;
   clearError: () => void;
   refreshUserData: () => Promise<void>;
@@ -52,7 +65,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       return true;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Login failed. Please try again.';
+      const errorMessage = apiErrorMessage(error, 'Login failed. Please try again.');
       set({
         isLoading: false,
         error: errorMessage,
@@ -80,7 +93,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       return true;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Registration failed. Please try again.';
+      const errorMessage = apiErrorMessage(error, 'Registration failed. Please try again.');
       set({
         isLoading: false,
         error: errorMessage,
@@ -97,6 +110,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     
     await tokenService.clearTokens();
+    clearAccountData();
     set({
       user: null,
       isAuthenticated: false,
@@ -130,53 +144,44 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
+  // These account actions leave the global isLoading alone (it tracks start-up
+  // session restore); screens keep their own saving state.
   updateProfile: async (data) => {
-    set({ isLoading: true, error: null });
+    set({ error: null });
     try {
       const response = await authAPI.updateProfile(data);
-      set({
-        user: { ...get().user, ...response.data.user } as User,
-        isLoading: false,
-      });
+      set({ user: { ...get().user, ...response.data.user } as User });
       return true;
     } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to update profile',
-      });
+      set({ error: apiErrorMessage(error, 'Failed to update profile') });
       return false;
     }
   },
 
   changePassword: async (currentPassword, newPassword) => {
-    set({ isLoading: true, error: null });
+    set({ error: null });
     try {
       await authAPI.changePassword(currentPassword, newPassword);
-      set({ isLoading: false });
       return true;
     } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to change password',
-      });
+      set({ error: apiErrorMessage(error, 'Failed to change password') });
       return false;
     }
   },
 
   updatePreferences: async (preferences) => {
-    set({ isLoading: true, error: null });
+    set({ error: null });
     try {
-      const response = await authAPI.updatePreferences(preferences);
-      set({
-        user: { ...get().user, ...response.data.user } as User,
-        isLoading: false,
-      });
+      // The API reads `notification_preferences`; the typed helper only names
+      // `notification_settings`, so pass the payload through as-is.
+      const payload: Parameters<typeof authAPI.updatePreferences>[0] = preferences;
+      await authAPI.updatePreferences(payload);
+      // PUT /api/auth/preferences only returns a message, so re-read the profile.
+      const response = await authAPI.getProfile();
+      set({ user: response.data });
       return true;
     } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to update preferences',
-      });
+      set({ error: apiErrorMessage(error, 'Failed to update preferences') });
       return false;
     }
   },

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../theme/ThemeContext";
@@ -62,16 +61,16 @@ export function MenuCard({
               <View style={styles.badges}>
                 {item.is_vegetarian && (
                   <View style={[styles.badge, { backgroundColor: "#E8F5E9" }]}>
-                    <Ionicons name="leaf" size={12} color="#28A745" />
+                    <Ionicons name="leaf" size={12} color="#BED630" />
                   </View>
                 )}
                 {item.is_spicy && (
-                  <View style={[styles.badge, { backgroundColor: "#FFEBEE" }]}>
-                    <Ionicons name="flame" size={12} color="#E53935" />
+                  <View style={[styles.badge, { backgroundColor: "rgba(255,107,107,0.18)" }]}>
+                    <Ionicons name="flame" size={12} color="#FF6B6B" />
                   </View>
                 )}
                 {item.is_popular && (
-                  <View style={[styles.badge, { backgroundColor: "#FFF3E0" }]}>
+                  <View style={[styles.badge, { backgroundColor: "rgba(240,90,34,0.18)" }]}>
                     <Ionicons name="star" size={12} color="#FF9800" />
                   </View>
                 )}
@@ -103,7 +102,7 @@ export function MenuCard({
               <Ionicons
                 name={isFavorite ? "heart" : "heart-outline"}
                 size={22}
-                color={isFavorite ? "#E53935" : colors.textMuted}
+                color={isFavorite ? "#FF6B6B" : colors.textMuted}
               />
             </TouchableOpacity>
           )}
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   categoryOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: "flex-end",
     padding: 12,
   },

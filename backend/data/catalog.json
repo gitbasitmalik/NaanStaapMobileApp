@@ -1,0 +1,5494 @@
+{
+  "_readme": "Menu, chai, store and allergen data for the Naan Staap app, collected from naanstaap.co.uk and order.naanstaap.co.uk. Edit prices/items here and restart the API. price null = shown as 'in store only'. is_popular marks the 'Popular right now' picks on the home screen.",
+  "price_source": "Prices come from the order site (order.naanstaap.co.uk) menu for the 'Naan Staap New Road' (whitechapel) branch, eat-in, on 2026-10-24. The main website shows no prices. Prices may differ per branch/order type. price=null means no matching product was found on the order site.",
+  "collected_at": "2026-10-24",
+  "categories": [
+    {
+      "id": "naan",
+      "name": "Naan",
+      "description": "Freshly baked stuffed naans, straight from the oven",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Pistachio-Kunafa-Naan-1024x1024.jpg",
+      "item_count": 19
+    },
+    {
+      "id": "paratha",
+      "name": "Paratha",
+      "description": "Flaky, buttery parathas with classic fillings",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Plain-Paratha-1024x1024.jpg",
+      "item_count": 8
+    },
+    {
+      "id": "curry",
+      "name": "Curry",
+      "description": "House curries made fresh to order",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2023/06/Naan-Channay.jpg",
+      "item_count": 5
+    },
+    {
+      "id": "street-food",
+      "name": "Street Food",
+      "description": "Chaats and street bites from Lahore to Multan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Multani-Gol-Gappay-1024x1024.jpg",
+      "item_count": 4
+    },
+    {
+      "id": "rice-bowl",
+      "name": "Rice Bowl",
+      "description": "Hearty rice bowls and biryani",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/rice-jalferizi-1024x1024.jpg",
+      "item_count": 5
+    },
+    {
+      "id": "snacks",
+      "name": "Snacks",
+      "description": "Wraps, sandwiches, bakes and loaded fries",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Anda-Paratha-Roll-1024x1024.jpg",
+      "item_count": 17
+    },
+    {
+      "id": "sweets",
+      "name": "Sweets",
+      "description": "Cakes, desi desserts and ice cream",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/10/karak-maska-1024x1024.jpg",
+      "item_count": 22
+    },
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "description": "Karak chai, coffee, lassi and cold drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Karak-Chai-1024x1024.jpg",
+      "item_count": 40
+    },
+    {
+      "id": "kids",
+      "name": "Kids",
+      "description": "Little portions for little ones",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-Pizza-Toasty-1024x1024.jpg",
+      "item_count": 4
+    },
+    {
+      "id": "deals",
+      "name": "Deals",
+      "description": "Breakfasts and sharer boxes",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-English-Breakfast-1024x1024.jpg",
+      "item_count": 3
+    },
+    {
+      "id": "dips",
+      "name": "Dips",
+      "description": "Sauces and dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/44cd63e066b10c48d070eb0222f741a5.JPEG",
+      "item_count": 5
+    },
+    {
+      "id": "extras",
+      "name": "Extras",
+      "description": "Add-ons",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/7bd540189580d4d1d6c7f5c195b71659.JPEG",
+      "item_count": 1
+    }
+  ],
+  "menu_items": [
+    {
+      "id": "pistachio-kunafa-naan",
+      "name": "Pistachio Kunafa Naan",
+      "description": "Stuffed with creamy pistachio kunafa and crispy strands, drizzled with rich chocolate sauce. A perfect blend of sweetness and crunch!",
+      "price": 10.95,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Pistachio-Kunafa-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 475,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Soybeans",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "chapati",
+      "name": "Chapati",
+      "description": "This wholemeal flour flatbread harmonizes diverse flavours in each bite.",
+      "price": 1.3,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Tandoori-Chapaati-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 210,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "plain"
+      ]
+    },
+    {
+      "id": "roghni-naan",
+      "name": "Roghni Naan",
+      "description": "The true cultural kneaded perfect dough is glazed with ghee (butter) and white sesame seeds.",
+      "price": 1.5,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Roghni-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 296,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sesame Seeds"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "plain"
+      ]
+    },
+    {
+      "id": "kalonji-naan",
+      "name": "Kalonji Naan",
+      "description": "A whole-wheat flatbread baked against a tandoor oven, flavoured and glazed with Kalonji seeds and ghee (butter).",
+      "price": 1.75,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Kalonji-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 284,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Sesame Seeds",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "plain"
+      ]
+    },
+    {
+      "id": "garlic-naan",
+      "name": "Garlic Naan",
+      "description": "A Signature flatbread infused with garlic, freshly chopped coriander, and butter, a taste persistent to the tongue.",
+      "price": 1.95,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Garlic-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 279,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "plain"
+      ]
+    },
+    {
+      "id": "bhatura",
+      "name": "Bhatura",
+      "description": "Bread made from fermented dough that’s deep-fried to create a fluffy, crispy texture.",
+      "price": 1.95,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/bhatura-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 297,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "plain"
+      ]
+    },
+    {
+      "id": "aaloo-masala-naan",
+      "name": "Aaloo Masala Naan",
+      "description": "Soft naan, filled with spiced chopped potatoes.",
+      "price": 6.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Aloo-Masala-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 204,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "palak-paneer-naan",
+      "name": "Palak Paneer Naan",
+      "description": "This flatbread has a stuffing of smoothly cooked palak (spinach) added into a mixture of cheese.",
+      "price": 6.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Palak-Paneer-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 278,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "chicken-karahi-naan",
+      "name": "Chicken Karahi Naan",
+      "description": "A traditional chicken karahi mince is cooked to perfection, stuffed in the naan.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Karahi-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 263,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "chicken"
+      ]
+    },
+    {
+      "id": "chicken-cheese-naan",
+      "name": "Chicken Cheese Naan",
+      "description": "Juicy chicken and flavourful blend infused with cheese. Perfect for those seeking rich flavour with a mild spicy touch.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Cheese-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 289,
+      "allergens": [
+        "Fish",
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "cheese"
+      ]
+    },
+    {
+      "id": "chicken-achaari-naan",
+      "name": "Chicken Achaari Naan",
+      "description": "The special chicken cooked with customary spicy pickle is loaded into the naan.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Achaari-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 282,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "chicken"
+      ]
+    },
+    {
+      "id": "chicken-dum-qeema-naan",
+      "name": "Chicken Dum Qeema Naan",
+      "description": "Cooked chicken mince infused with smoked spices is stuffed in the naan bread.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Dum-Qeema-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 268,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "chicken"
+      ]
+    },
+    {
+      "id": "naga-chicken-naan",
+      "name": "Naga Chicken Naan",
+      "description": "Tender chicken mince cooked in Naga chili mix, stuffed in the naan.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Naga-Chicken-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 262,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "chicken"
+      ]
+    },
+    {
+      "id": "lamb-dum-qeema-naan",
+      "name": "Lamb Dum Qeema Naan",
+      "description": "This naan is loaded with finely minced lamb meat, infused in a smokey secret house sauce.",
+      "price": 7.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lamb-Dum-Qeema-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 276,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "lamb"
+      ]
+    },
+    {
+      "id": "lamb-qeema-masala-naan",
+      "name": "Lamb Qeema Masala Naan",
+      "description": "Lamb mince marinated in spice masala, herbs, stuffed and cooked inside the naan, baked in the oven.",
+      "price": 7.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lamb-Qeema-Masala-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 220,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sesame Seeds"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "lamb"
+      ]
+    },
+    {
+      "id": "cheese-naan",
+      "name": "Cheese Naan",
+      "description": "The traditional flatbread is filled with everyone’s favourite cheese and baked.",
+      "price": 6.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Cheese-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 298,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cheese"
+      ]
+    },
+    {
+      "id": "aaloo-cheese-naan",
+      "name": "Aaloo Cheese Naan",
+      "description": "Soft naan, filled with spiced chopped potatoes and cheese.",
+      "price": 6.45,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Aaloo-cheese-Naan-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 237,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "cheese"
+      ]
+    },
+    {
+      "id": "nutella-naan",
+      "name": "Nutella Naan",
+      "description": "Life is sweet, but let it be sweeter with our soft naan filled with lots of Nutella.",
+      "price": 7.95,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/nutella-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 391,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Soybeans",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "peshawri-naan",
+      "name": "Peshawri Naan",
+      "description": "This special naan has a stuffing of sweet coconut , blend of spices, crushed almonds and orange peel to add the extra zest.",
+      "price": 6.85,
+      "category": "naan",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Peshwari-Naan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 340,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "plain-paratha",
+      "name": "Plain Paratha",
+      "description": "A well cooked soft and crispy wholemeal lightly fried flatbread.",
+      "price": 3.45,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Plain-Paratha-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 308,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "sweet-paratha",
+      "name": "Sweet Paratha",
+      "description": "Wholemeal Paratha is stuffed with sugar and poppy seeds, & sprinkled with icing sugar.",
+      "price": 4.25,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Sweet-Paratha-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 330,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "vegetarian",
+        "sweet"
+      ]
+    },
+    {
+      "id": "aloo-paratha",
+      "name": "Aloo Paratha",
+      "description": "Wholemeal crispy Paratha, filled with spiced chopped potatoes.",
+      "price": 5.75,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Aaloo-Paratha-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 206,
+      "allergens": [
+        "Gluten",
+        "Mustard"
+      ],
+      "may_contain": [
+        "Milk",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "palak-paneer-paratha",
+      "name": "Palak Paneer Paratha",
+      "description": "Wholemeal crispy paratha filled with smoothly cooked palak (spinach) added into a mixture of cheese.",
+      "price": 5.75,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Palak-Paneer-Paratha-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 281,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "gobi-paratha",
+      "name": "Gobi Paratha",
+      "description": "Also known as Cauliflower Paratha, this umleavened whole wheat flatbread is stuffed with a savoury, spiced grated cauliflower filling.",
+      "price": 5.75,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2024/10/Gobbi-Paratha-1.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 246,
+      "allergens": [
+        "Gluten",
+        "Mustard"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "chicken-dum-paratha",
+      "name": "Chicken Dum Paratha",
+      "description": "Cooked chicken mince infused with smoked spices is stuffed in a wholemeal flatbread.",
+      "price": 6.95,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Dum-Paratha-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 286,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [
+        "Milk",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "non-veg"
+      ]
+    },
+    {
+      "id": "chicken-achari-paratha",
+      "name": "Chicken Achari Paratha",
+      "description": "The traditional pickle flavour chicken mince is stuffed into a wholemeal paratha.",
+      "price": 6.95,
+      "category": "paratha",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/chicken-Achari-Paratha-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 285,
+      "allergens": [
+        "Gluten",
+        "Mustard",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [
+        "Milk",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "non-veg"
+      ]
+    },
+    {
+      "id": "channa",
+      "name": "Channa",
+      "description": "The white channay (Chickpeas) are cooked until tender in a bed of spices.",
+      "price": 6.75,
+      "category": "curry",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2023/06/Naan-Channay.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 291,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "anarkali-daal",
+      "name": "Anarkali Daal",
+      "description": "Made from split chana daal that has been boiled and flavoured with a blend of aromatic spices.",
+      "price": 6.45,
+      "category": "curry",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Anarkali-Daal-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 163,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "chicken-jalferezi",
+      "name": "Chicken Jalferezi",
+      "description": "Boneless chicken in robust curry sauce, garnished with ginger and coriander.",
+      "price": 7.95,
+      "category": "curry",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Jalferezi-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 195,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "lamb-hareesa",
+      "name": "Lamb Hareesa",
+      "description": "Hareesa similar to Haleem is infused with tender meat, wheat, barley, and a numebr of spices, & garnished with mini kababs.",
+      "price": 9.95,
+      "category": "curry",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lamb-Hareesa-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 212,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "multani-gol-gappay-pani-puri",
+      "name": "Multani Gol Gappay (Pani Puri)",
+      "description": "Crisp puris filled with spiced potatoes, chickpeas, tamarind water, and aromatic spices.",
+      "price": 5.65,
+      "category": "street-food",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Multani-Gol-Gappay-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 106,
+      "allergens": [
+        "Celery",
+        "Gluten",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "lahori-dahi-channa-chaat",
+      "name": "Lahori Dahi Channa Chaat",
+      "description": "Softened boondi layered with yogurt, potatoes, chickpeas, and fresh vegetables. Drizzled with mint and bhel sauces, finished with a sprinkle of chaat masala",
+      "price": 5.65,
+      "category": "street-food",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lahori-Dahi-Channa-Chaat-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 131,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "desi-samosa-chaat",
+      "name": "Desi Samosa Chaat",
+      "description": "Crushed crispy samosas topped with spiced chickpeas, yogurt, mint chutney, and tamarind sauce, creating a savoury and flavourful combination.",
+      "price": 5.65,
+      "category": "street-food",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Desi-Samosa-Chaat-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 214,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "samosa",
+      "name": "Samosa",
+      "description": "Fried samosa with a savoury filling, including ingredients such as spiced potatoes and onions, etc.",
+      "price": 1.75,
+      "category": "street-food",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Samosa-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 256,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "karak-maska",
+      "name": "Karak Maska",
+      "description": "A soft, sweet brioche bread slice generously layered with rich cream, served alongside a small cup of our signature Karak Chai. Simply pour the chai over the bread and enjoy this traditional comfort treat with a spoon — desi nostalgia in every bite!",
+      "price": null,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/10/karak-maska-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "naan-khatai",
+      "name": "Naan Khatai",
+      "description": "This is the famous biscuit of the subcontinent (naan khatai), made with butter ghee, almonds, and sugar.",
+      "price": 1.25,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Naan-Khatai-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 510,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "cinnamon-roll-bite",
+      "name": "Cinnamon Roll Bite",
+      "description": "The cinnamon rolls are baked into bite size rolls.",
+      "price": 0.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/cinamon-roll-bite-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 383,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Eggs",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "brownie-bite",
+      "name": "Brownie Bite",
+      "description": "We reduced the size of brownies into bite size delights.",
+      "price": 0.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/browni-bite-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 430,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "almond-cake",
+      "name": "Almond Cake",
+      "description": "Soft in texture, divine in taste, our house special almond cake is next to none.",
+      "price": 4.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Almond-Cake-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 424,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "chocolate-fudge-cake",
+      "name": "Chocolate Fudge Cake",
+      "description": "This is super moist, made with chocolate and cocoa powder, and frosted with a perfect chocolate glaze.",
+      "price": 5.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chocolate-Fudge-Cake-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 398,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "chocolate-lava-cake",
+      "name": "Chocolate Lava Cake",
+      "description": "A perfect Chocolate. A mixture of fresh chocolate, eggs, and sugar.",
+      "price": 5.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chocolate-lava-cake-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 433,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "pistachio-dream-cake",
+      "name": "Pistachio Dream Cake",
+      "description": "It’s soft, fluffy, light and tastes unbelievable, with silky cream cheese frosting on top.",
+      "price": 5.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Pistachio-Dream-Cake-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 375,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Sesame Seeds",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "hazelnut-and-pistachio-cake",
+      "name": "Hazelnut & Pistachio Cake",
+      "description": "Rich decadent pistachio cake is slathered in light, creamy pistachio frosting.",
+      "price": 5.75,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Hazelnut-and-Pistachio-cake-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 397,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans"
+      ],
+      "customizations": [],
+      "tags": [
+        "sweet"
+      ]
+    },
+    {
+      "id": "gajar-halwa",
+      "name": "Gajar Halwa",
+      "description": "A halwa made with red carrots, milk, and sugar & garnished with saluted nuts.",
+      "price": 4.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Gaajar-Halwa-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 350,
+      "allergens": [
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds"
+      ],
+      "customizations": [],
+      "tags": [
+        "dessert"
+      ]
+    },
+    {
+      "id": "gulab-jamun",
+      "name": "Gulab Jamun",
+      "description": "A delicious sweet made from fried milk solids and soaked in a fragrant syrup. Perfect for satisfying your sweet tooth!",
+      "price": 4.5,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Gulab-Jamun-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 221,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds"
+      ],
+      "customizations": [],
+      "tags": [
+        "dessert"
+      ]
+    },
+    {
+      "id": "lahori-suji-halwa",
+      "name": "Lahori Suji Halwa",
+      "description": "A classic Lahori sweet dish made with semolina, sugar and ghee, flavoured with cardamom.",
+      "price": 4.5,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lahori-Suji-Halwa-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 312,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "dessert"
+      ]
+    },
+    {
+      "id": "cocoa-icecream",
+      "name": "Cocoa Icecream",
+      "description": "Rich and velvety chocolate ice cream crafted for true cocoa lovers—smooth, indulgent, and satisfying.",
+      "price": 2.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Uber-icecream-cocoa-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 200,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "mango-icecream",
+      "name": "Mango Icecream",
+      "description": "Smooth, refreshing mango ice cream with a sweet, tropical flavour.",
+      "price": 2.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Uber-icecream-mango-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 167,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "paan-icecream",
+      "name": "Paan Icecream",
+      "description": "A unique, refreshing paan-flavoured ice cream with a sweet, herbal twist and nutty notes.",
+      "price": 2.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Uber-icecream-paan-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 230,
+      "allergens": [
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "pistachio-icecream",
+      "name": "Pistachio Icecream",
+      "description": "Luxurious saffron-infused ice cream blended with crunchy pistachios for a royal, aromatic flavour.",
+      "price": 2.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Uber-icecream-pistachio-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 250,
+      "allergens": [
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "smore-icecream",
+      "name": "Smore Icecream",
+      "description": "Creamy vanilla ice cream packed with crunchy chocolate cookie pieces for the perfect cookies-and-cream indulgence.",
+      "price": 2.95,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Uber-icecream-smore-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 215,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "gajar-halwa-icecream",
+      "name": "Gajar Halwa Icecream",
+      "description": "",
+      "price": null,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/gajar-halwa-icecream.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "gulab-jamun-icecream",
+      "name": "Gulab Jamun Icecream",
+      "description": "",
+      "price": null,
+      "category": "sweets",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/gulab-jamun-icecream.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "ice-cream"
+      ]
+    },
+    {
+      "id": "anda-paratha-roll",
+      "name": "Anda Paratha Roll",
+      "description": "Ghee-glazed whole-wheat paratha enfolding a spiced veggie omelette.",
+      "price": 4.95,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Anda-Paratha-Roll-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 213,
+      "allergens": [
+        "Eggs",
+        "Gluten"
+      ],
+      "may_contain": [
+        "Milk",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "rolls-and-buns"
+      ]
+    },
+    {
+      "id": "chicken-wrap",
+      "name": "Chicken Wrap",
+      "description": "Fried chicken strips wrapped in a soft tortilla with fresh veggies and zesty sauce.",
+      "price": 4.5,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Wrap-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 142,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Mustard"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "rolls-and-buns"
+      ]
+    },
+    {
+      "id": "chicken-kebab-wrap",
+      "name": "Chicken Kebab Wrap",
+      "description": "Tender and succulent chicken kebabs wrapped in a warm tortilla with aromatic spices.",
+      "price": 4.5,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Kebab-Wrap-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 270,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Mustard"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "rolls-and-buns"
+      ]
+    },
+    {
+      "id": "bun-kabab",
+      "name": "Bun Kabab",
+      "description": "Grilled seasoned meat patties in a soft bun with crisp veggies, egg and special tamarind sauce.",
+      "price": 5.5,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Bun-Kabab-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 178,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "rolls-and-buns"
+      ]
+    },
+    {
+      "id": "chicken-club-sandwich",
+      "name": "Chicken Club Sandwich",
+      "description": "The perfect club chicken sandwich in our own way, a triple-layer bread filled with creamy chicken, fresh salad, tomato and egg.",
+      "price": 8.45,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Club-Sandwich-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 146,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Mustard",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Milk",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "sandwich"
+      ]
+    },
+    {
+      "id": "chicken-peri-tikka-sandwich",
+      "name": "Chicken Peri Tikka Sandwich",
+      "description": "This is a sandwich with peri tikka flavoured chicken and crispy salad. .",
+      "price": 6.95,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chicken-Peri-Tikka-sandwich-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 184,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "sandwich"
+      ]
+    },
+    {
+      "id": "bombay-sandwich",
+      "name": "Bombay Sandwich",
+      "description": "Popular vegetarian street food sandwich. Contains Aloo Masala, Cheese, Tamarind sauce and our own homemade green mint and garlic sauces. All toasted between two slices of white bread.",
+      "price": 6.25,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Bombay-sandwich-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 174,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "sandwich"
+      ]
+    },
+    {
+      "id": "chips",
+      "name": "Chips",
+      "description": "Thin cut potato chips deep fried and salted to perfection. It is an excellent side with your order.",
+      "price": 2.5,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chips-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 141,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sides"
+      ]
+    },
+    {
+      "id": "masala-chips",
+      "name": "Masala Chips",
+      "description": "The chips of London get seasoned with house special masala (spices) and served hot in a plate.",
+      "price": null,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Masala-Chips-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sides"
+      ]
+    },
+    {
+      "id": "chicken-patties",
+      "name": "Chicken Patties",
+      "description": "Consisting of a crispy, flaky pastry shell filled with our flavoursome chicken and seasoning.",
+      "price": 2.95,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/chicken-patties-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 339,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "sides"
+      ]
+    },
+    {
+      "id": "chicken-cheese-bake",
+      "name": "Chicken Cheese Bake",
+      "description": "Flaky pastry filled with seasoned chicken and melted cheese, baked until golden and delicious.",
+      "price": 3.55,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/02/web-Chicken-Cheese-Bake.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Fish",
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Sesame Seeds",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "bake"
+      ]
+    },
+    {
+      "id": "chicken-dum-bake",
+      "name": "Chicken Dum Bake",
+      "description": "Oven-baked pastry filled with savoury seasoned chicken, soft inside with a golden, crisp finish.",
+      "price": 3.55,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/02/web-Chicken-Dum-Bake.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk",
+        "Sesame Seeds",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Peanuts",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "bake"
+      ]
+    },
+    {
+      "id": "palak-paneer-bake",
+      "name": "Palak Paneer Bake",
+      "description": "Creamy spinach blended with melted cheese, gently seasoned and baked inside a freshly baked golden bread. Warm, cheesy, and comforting – a perfect vegetarian bake with rich flavour in every bite.",
+      "price": 3.55,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/02/web-Palak-Paneer-Bake.jpg-1024x1024.jpeg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 275,
+      "allergens": [
+        "Eggs",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "bake"
+      ]
+    },
+    {
+      "id": "chicken-peri-tikka-panini",
+      "name": "Chicken Peri Tikka Panini",
+      "description": "Tender chicken tikka marinated in peri-peri spices, served cold in a panini bread for a bold, smoky, and spicy flavour.",
+      "price": null,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/02/web-Chicken-Peri-Tikka-Panini.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Mustard"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "creamy-pepper-chicken-panini",
+      "name": "Creamy Pepper Chicken Panini",
+      "description": "Juicy chicken in a rich, creamy pepper sauce, served cold in panini bread for a smooth and comforting taste.",
+      "price": null,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/02/web-Chicken-Cheese-Panini.jpg-1024x1024.jpeg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "smoky-chicken-loadded-fries",
+      "name": "Smoky Chicken Loaded Fries",
+      "description": "Crispy golden chips loaded with tender smoky chicken, melted cheese, and rich, creamy sauces. Packed with bold, smoky flavour in every indulgent bite.",
+      "price": 7.45,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/smoky-chicken-loadded-fries-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 165,
+      "allergens": [
+        "Eggs",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Mustard",
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "loaded-fries"
+      ]
+    },
+    {
+      "id": "halloumi-loaded-fries",
+      "name": "Halloumi Loaded Fries",
+      "description": "Crispy golden fries topped with sizzling halloumi, melted cheese, and a bold mix of creamy and spicy sauces. Finished with a hint of heat for the ultimate indulgent bite.",
+      "price": 7.45,
+      "category": "snacks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/halloumi-loaded-fries-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 162,
+      "allergens": [
+        "Eggs",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "loaded-fries"
+      ]
+    },
+    {
+      "id": "karak-chai",
+      "name": "Karak Chai",
+      "description": "It’s a sweet blend of the finest tea leaves, milk, and cardamom, boilded on stove for the required taste.",
+      "price": 3.2,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Karak-Chai-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "masala-chai",
+      "name": "Masala Chai",
+      "description": "A five spice blend with milk and tea leaves is the masala chai.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/09/Audrey-Hepburn-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "karak-chocolate",
+      "name": "Karak Chocolate",
+      "description": "The hot chocolate gets infused with karak chai and topped with whipping cream.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Girl-Cup-mockup-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "pink-tea-kashmiri-chai",
+      "name": "Pink Tea (Kashmiri Chai)",
+      "description": "Our Pink tea has saltiness of tradition and can be made to taste sweet per request. Finished with a sprinkle of flaked almonds.",
+      "price": 3.75,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Kashmiri-chai-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "cinnamon-chai",
+      "name": "Cinnamon Chai",
+      "description": "Karak Chai with a pinch of cinnamon is the choice of many tea lovers.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Cinnamon-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "caramel-chai",
+      "name": "Caramel Chai",
+      "description": "A mix of coffee, tea, and candy is Karak Chai with caramel taste.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/caramel-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "vanilla-chai",
+      "name": "Vanilla Chai",
+      "description": "Karak Chai with vanilla as flavour is a drink for you to try. Soothing, delicious, and aromatic.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/vanilla-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "sugar-free-chai",
+      "name": "Sugar free Chai",
+      "description": "A perfect blend of milk, tea leaves, and cardomom w/o sugar.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/sugar-free-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "chai-latte",
+      "name": "Chai Latte",
+      "description": "Chai Latte is the desi coffee, blend of coffee beans and karak chai topped with whipping cream.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Chai-Latte-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "green-tea",
+      "name": "Green Tea",
+      "description": "A perfect hot cup of water and green tea that heals almost everything.",
+      "price": 2.6,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/09/Green-tea-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 1,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "english-tea",
+      "name": "English Tea",
+      "description": "The English tea that is English in every way. A western cup to sip on in a Desi stop.",
+      "price": 2.6,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/09/english-tea-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 42,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "description": "Freshly brewed coffee with bold aroma and rich flavor to perfectly complement your naan.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/09/coffee-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "lemonade",
+      "name": "Lemonade",
+      "description": "Irresistible blend of vibrant citrus and a hint of sweetness for a tangy, thirst-quenching delight.",
+      "price": 3.45,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Lemonade-330-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 64,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "mango-lassi",
+      "name": "Mango Lassi",
+      "description": "A delicious blend of mango, yogurt, milk and ice for the heavenish feel.",
+      "price": 4.45,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Mango-lassi-330ml-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 100,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "karak-chai-frappe",
+      "name": "Karak Chai Frappe",
+      "description": "Our traditional Karak Chai is chilled and frothed into a soothing refresher drink.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Frappe-Karak-chai-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "karak-latte-frappe",
+      "name": "Karak Latte Frappe",
+      "description": "Karak Tea, Coffee, milk, ice, and latte flavour are frothed into a soothing latte frappe.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Frappe-Karak-coffee-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "pink-tea-strawberry-frappe",
+      "name": "Pink Tea Strawberry Frappe",
+      "description": "The Kashmiri Chai (Pink Tea) gets a boost of ice and froth transforming it into a chilled drink.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Frappe-Pink-tea-strawberry-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "classic-mojito",
+      "name": "Classic Mojito",
+      "description": "Mint, lime, sweetness. Refreshing balance.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Mojito-Classic-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "mango-tango",
+      "name": "Mango Tango",
+      "description": "Juicy mango tango, zesty lime, and refreshing mint combined for a delightful drink.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/mango-tango-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "blue-lagoon-mojito",
+      "name": "Blue Lagoon Mojito",
+      "description": "Classic mint and lime elevated with a captivating splash of blue curaçao.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Mojito-Blue-Lagoon-2-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "strawberry-mojito",
+      "name": "Strawberry Mojito",
+      "description": "Fresh strawberries, zesty lime, aromatic mint—a delightful, fruity chiller.",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/Mojito-Straberry-1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "vanilla-matcha",
+      "name": "Vanilla Matcha",
+      "description": "",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/vanilla-matcha-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "strawberry-matcha",
+      "name": "Strawberry Matcha",
+      "description": "",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/strawberry-matcha-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "soft-drink",
+      "name": "Soft Drink",
+      "description": "",
+      "price": null,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/coke-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "fruit-shoot-orange-black-current",
+      "name": "Fruit Shoot (Orange/ Black Current)",
+      "description": "A kid-friendly orange drink, perfect for little hands.",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/fruit-shoot-black-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 5,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "bottled-water",
+      "name": "Bottled Water",
+      "description": "Pure, natural mineral water – refreshing and hydrating.",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2025/08/water-deliverloo-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "pizza-toasty",
+      "name": "Pizza Toasty",
+      "description": "",
+      "price": null,
+      "category": "kids",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-Pizza-Toasty-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "chicken-and-chips",
+      "name": "Chicken & Chips",
+      "description": "Tender chicken strips, lightly seasoned and fried to perfection, served with a side of crispy golden chips. A classic kids’ favourite!",
+      "price": 5.95,
+      "category": "kids",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-Chicken-n-Chips1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 115,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "mini-chicken-cheese-naan",
+      "name": "Mini Chicken Cheese Naan",
+      "description": "A soft mini naan filled with minced chicken and melted cheese, grilled to perfection and served with a side of crunchy chips.",
+      "price": 5.95,
+      "category": "kids",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-Mini-Chicken-Cheese-Naan1-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 307,
+      "allergens": [
+        "Fish",
+        "Gluten",
+        "Milk",
+        "Mustard",
+        "Sesame Seeds"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "rice-jalferizi",
+      "name": "Rice Jalferizi",
+      "description": "White rice served with portion of bonless chicken jalferezi curry, fresh salad and mint sauce",
+      "price": 9.25,
+      "category": "rice-bowl",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/rice-jalferizi-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 150,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "rice-daal",
+      "name": "Rice Daal",
+      "description": "White rice served with portion of split chana daal curry, fresh salad and mint sauce.",
+      "price": 8.65,
+      "category": "rice-bowl",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/rice-daal-1024x1024.jpg",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 124,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "english-breakfast",
+      "name": "English Breakfast",
+      "description": "Classic English breakfast served with fried sausage, baked beans, a crispy hash brown, fluffy omelette, and one slice of bread. A hearty and satisfying start to your day.",
+      "price": 8.95,
+      "category": "deals",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/web-English-Breakfast-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "desi-breakfast",
+      "name": "Desi Breakfast",
+      "description": "Start your day with our wholesome and delicious Breakfast Deal! This satisfying meal includes a portion of flavorful Chaana, sweet and comforting Suji Halwa, your choice of bread, and a perfectly brewed cup of Karak Chai to keep you energized. Whether you're in the mood for something savory or sweet, this breakfast deal has it all—packed with flavor and goodness to kickstart your morning!",
+      "price": 9.95,
+      "category": "deals",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2026/06/Desi-breakfast-1024x1024.jpg",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "americano",
+      "name": "Americano",
+      "description": "Smooth and bold black coffee with a rich aroma.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/1bdf1d4c3d0754584ea9494831cc7173.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "butter-chicken-only",
+      "name": "Butter Chicken Only",
+      "description": "(SINGLE SERVING) Tender chicken pieces cooked in a rich, creamy butter curry with aromatic Indian spices. Smooth, mildly spiced, and full of authentic flavour.",
+      "price": 7.95,
+      "category": "curry",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/c2924268145da4971835dce538c5d404.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": 304,
+      "allergens": [
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "sharer-box",
+      "name": "Sharer Box",
+      "description": "Perfect for sharing! Includes a Club Sandwich, Bun Kebab, 3 Chicken Strips, crispy Chips, Garlic Dip, and Ketchup. Great for two or to enjoy all to yourself.",
+      "price": 16.45,
+      "category": "deals",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/f51cb743a4d5eb4d463bc1ff332b8122.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Molluscs",
+        "Mustard",
+        "Sesame Seeds",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [
+        "Milk",
+        "Peanuts",
+        "Soybeans",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "lotus-biscoff-milk-cake",
+      "name": "Lotus Biscoff Milk Cake",
+      "description": "Soft and creamy milk-soaked sponge topped with Lotus Biscoff spread and biscuit crumbs. Rich, smooth, and irresistibly indulgent.",
+      "price": 4.95,
+      "category": "sweets",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/10a73838ae548e35bdec7fd54aa1b6ee.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Soybeans"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "boiled-egg",
+      "name": "Boiled Egg",
+      "description": "Perfectly boiled egg – simple, healthy, and protein-packed. Great as a side or light snack.",
+      "price": 1,
+      "category": "extras",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/7bd540189580d4d1d6c7f5c195b71659.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 143,
+      "allergens": [
+        "Eggs"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "chicken-biryani",
+      "name": "Chicken Biryani",
+      "description": "Fragrant basmati rice layered with tender chicken and aromatic spices, slow-cooked for a rich, authentic flavour. Served hot and full of taste.",
+      "price": 9.25,
+      "category": "rice-bowl",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/0e6d03b34ccaf8fdb5487e9421211833.JPEG",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": 181,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Mustard",
+        "Peanuts",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "zanti-cola",
+      "name": "Zanti Cola",
+      "description": "",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/de43c4cdda637f8f64817a7cbc801d83.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 20,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "hot-sauce",
+      "name": "Hot Sauce",
+      "description": "A bold and fiery dip with the perfect balance of heat and flavour. Ideal for adding an extra kick to your favourite snacks and meals.",
+      "price": 0.3,
+      "category": "dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/44cd63e066b10c48d070eb0222f741a5.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "dip"
+      ]
+    },
+    {
+      "id": "mini-cheese-naan-with-chips",
+      "name": "Mini Cheese Naan with Chips",
+      "description": "A soft mini naan filled with melted cheese, served with crispy chips. A simple, cheesy and delicious meal, perfect for little appetites.",
+      "price": 5.95,
+      "category": "kids",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/0f7782941ddbf39d5071ac3865a5ca1b.PNG",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 314,
+      "allergens": [
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "butter-chicken-rice-bowl",
+      "name": "Butter Chicken Rice Bowl",
+      "description": "Creamy butter chicken served with fragrant basmati rice, fresh salad, tomato and a refreshing mint yogurt sauce dip.",
+      "price": 9.25,
+      "category": "rice-bowl",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/images/items/0bc98c97988f7360738de08bfe157524.PNG",
+      "is_vegetarian": false,
+      "is_popular": true,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 166,
+      "allergens": [
+        "Gluten",
+        "Milk",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "rose-and-pistachio-milk-cake",
+      "name": "Rose & Pistachio Milk Cake",
+      "description": "Soft and creamy milk-soaked sponge infused with delicate rose flavour and topped with pistachios. Rich, fragrant, and indulgently delicious.",
+      "price": 4.95,
+      "category": "sweets",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/90235951ce04ca035307da9879e49840.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk",
+        "Tree Nuts"
+      ],
+      "may_contain": [
+        "Peanuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "6-cup-tea-flask",
+      "name": "6 Cup Tea Flask",
+      "description": "Perfect for sharing moments! Our large insulated flask is filled with rich, aromatic chai – freshly brewed and made to serve 6 cups. Whether it’s a family gathering, team meeting, or cozy catch-up, it’s the perfect choice. Stays hot for up to 1 hour and comes with 6 cups.",
+      "price": 19.2,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/52e04e7d59893350332894519043c165.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 91,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "hot-drink"
+      ]
+    },
+    {
+      "id": "yoghurt-mint-sauce",
+      "name": "Yoghurt Mint Sauce",
+      "description": "Cool and creamy yoghurt blended with fresh mint – a perfect refreshing dip.",
+      "price": 0.3,
+      "category": "dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/801d90636345619f711578c5cc6fa38a.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 69,
+      "allergens": [
+        "Milk",
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "dip"
+      ]
+    },
+    {
+      "id": "cappuccino",
+      "name": "Cappuccino",
+      "description": "A balanced mix of espresso, steamed milk, and frothy foam – creamy and comforting.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/99c64300bcfee787e3fdfe5ea395b94f.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "zanti-zero",
+      "name": "Zanti Zero",
+      "description": "",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/bda4598df8c0fd1272efa96079962824.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 1,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "tiramisu",
+      "name": "Tiramisu",
+      "description": "A rich and creamy Italian-inspired dessert layered with coffee-soaked sponge and smooth cream cheese, finished with a dusting of cocoa.",
+      "price": 6.95,
+      "category": "sweets",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/b336b876cd5a8d904d5cd56d6bcca92f.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": true,
+      "is_spicy": false,
+      "calories": 360,
+      "allergens": [
+        "Eggs",
+        "Gluten",
+        "Milk"
+      ],
+      "may_contain": [
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "new"
+      ]
+    },
+    {
+      "id": "espresso",
+      "name": "Espresso",
+      "description": "A strong and intense shot of pure coffee – small but mighty.",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/13beb3c3427a49c8953456b8af327a10.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "zanti-orange",
+      "name": "Zanti Orange",
+      "description": "",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/2368697431b97a3f92ae2884aa0f03ec.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 19,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "white-sauce",
+      "name": "White Sauce",
+      "description": "Smooth and flavourful garlic sauce with a rich, savoury taste.",
+      "price": 0.3,
+      "category": "dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/5fb6b2a9dc63eec34e294596691b520c.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 89,
+      "allergens": [
+        "Milk",
+        "Mustard"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "dip"
+      ]
+    },
+    {
+      "id": "mint-sauce",
+      "name": "Mint Sauce",
+      "description": "Tangy and herby mint sauce, great for adding a zesty kick.",
+      "price": 0.3,
+      "category": "dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/9848dd97a954f4a4f01bc37d41806f7a.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 75,
+      "allergens": [
+        "Sulphur Dioxide and Sulphites"
+      ],
+      "may_contain": [
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": [
+        "dip"
+      ]
+    },
+    {
+      "id": "zanti-zest",
+      "name": "Zanti Zest",
+      "description": "",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/c0ed581c00a6c2cf156b580ec1ac39ce.PNG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 19,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "flat-white",
+      "name": "Flat White",
+      "description": "Velvety smooth coffee with a rich espresso base and silky steamed milk.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/3b8daca4fecde5b943d2809aec642a2d.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "plain-rice",
+      "name": "Plain Rice",
+      "description": "Fluffy steamed basmati rice, perfectly cooked to complement any of our curries or mains. Light, aromatic, and satisfying.",
+      "price": 4.95,
+      "category": "rice-bowl",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/4c7f592ed9d0534629868aa1c23a4ae3.PNG",
+      "is_vegetarian": true,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 138,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": []
+    },
+    {
+      "id": "hot-chocolate",
+      "name": "Hot Chocolate",
+      "description": "Warm, rich, and chocolatey – a sweet and cosy treat.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/c5a92a6b4c8546e91166290eeb346745.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [
+        "Gluten"
+      ],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "pickle",
+      "name": "Pickle",
+      "description": "Spicy and tangy mixed pickle – a classic Dip to elevate any meal.",
+      "price": 0.5,
+      "category": "dips",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/9d6bedf93df5949c5dda5d0d44147899.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 150,
+      "allergens": [
+        "Mustard"
+      ],
+      "may_contain": [
+        "Gluten",
+        "Peanuts",
+        "Tree Nuts"
+      ],
+      "customizations": [],
+      "tags": [
+        "dip"
+      ]
+    },
+    {
+      "id": "latte",
+      "name": "Latte",
+      "description": "Mild and milky with a shot of espresso – perfect for a smooth coffee experience.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/1bdf1d4c3d0754584ea9494831cc7173.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "fruit-shoot-black",
+      "name": "Fruit Shoot Black",
+      "description": "A kid-friendly blackcurrant drink, perfect for little hands.",
+      "price": 1.95,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/f18ba17dae3e6fbf5ddeb75ddc36e791.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 6,
+      "allergens": [],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "cold-drink"
+      ]
+    },
+    {
+      "id": "macchiato",
+      "name": "Macchiato",
+      "description": "A bold espresso marked with a dash of milk foam for a strong yet smooth finish.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/99c64300bcfee787e3fdfe5ea395b94f.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "mocha",
+      "name": "Mocha",
+      "description": "A delicious blend of coffee and chocolate, topped with milk – the best of both worlds.",
+      "price": 3.25,
+      "category": "drinks",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/c5a92a6b4c8546e91166290eeb346745.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": null,
+      "allergens": [
+        "Milk"
+      ],
+      "may_contain": [],
+      "customizations": [],
+      "tags": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "lamb-dum-paratha",
+      "name": "Lamb Dum Paratha",
+      "description": "The fresh lamb cut mince is cooked with aromatic spices and herbs, stuffed into a wholemeal paratha that is glazed with ghee for a crisp finish.",
+      "price": 6.95,
+      "category": "paratha",
+      "image_url": "https://storage.cdneu.syrve.com/syrveweb/naan-staap/1684/8295/images/items/5d0cb0ffdfa154e877dcaa22cac8aba1.JPEG",
+      "is_vegetarian": false,
+      "is_popular": false,
+      "is_new": false,
+      "is_spicy": false,
+      "calories": 284,
+      "allergens": [
+        "Gluten"
+      ],
+      "may_contain": [
+        "Peanuts",
+        "Sesame Seeds",
+        "Soybeans",
+        "Sulphur Dioxide and Sulphites",
+        "Tree Nuts",
+        "Celery"
+      ],
+      "customizations": [],
+      "tags": []
+    }
+  ],
+  "chai": [
+    {
+      "id": "karak-chai",
+      "is_signature": true,
+      "type": "hot",
+      "flavoured": false
+    },
+    {
+      "id": "masala-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": false
+    },
+    {
+      "id": "pink-tea-kashmiri-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": false
+    },
+    {
+      "id": "cinnamon-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": true
+    },
+    {
+      "id": "caramel-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": true
+    },
+    {
+      "id": "vanilla-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": true
+    },
+    {
+      "id": "sugar-free-chai",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": false
+    },
+    {
+      "id": "chai-latte",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": false
+    },
+    {
+      "id": "karak-chocolate",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": true
+    },
+    {
+      "id": "karak-chai-frappe",
+      "is_signature": false,
+      "type": "cold",
+      "flavoured": false
+    },
+    {
+      "id": "karak-latte-frappe",
+      "is_signature": false,
+      "type": "cold",
+      "flavoured": false
+    },
+    {
+      "id": "pink-tea-strawberry-frappe",
+      "is_signature": false,
+      "type": "cold",
+      "flavoured": false
+    },
+    {
+      "id": "6-cup-tea-flask",
+      "is_signature": false,
+      "type": "hot",
+      "flavoured": false
+    }
+  ],
+  "stores": [
+    {
+      "id": "green-street",
+      "name": "Green Street",
+      "address": "32 Plashet Grove, London, E6 1AE",
+      "city": "London",
+      "postcode": "E6 1AE",
+      "phone": "02082573783",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.53713367,
+      "longitude": 0.03597755,
+      "google_maps_url": "https://maps.app.goo.gl/dQPTQcPpAPcEDjUM9",
+      "image_url": "https://naanstaap.co.uk/wp-content/uploads/2023/06/green-street.jpg",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "whitechapel",
+      "name": "Whitechapel",
+      "address": "97 New Road, London, E1 1HJ",
+      "city": "London",
+      "postcode": "E1 1HJ",
+      "phone": "02072475693",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.51734591,
+      "longitude": -0.06259199,
+      "google_maps_url": "https://maps.app.goo.gl/xjFuDd6GTFAgFJg58",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "ilford",
+      "name": "Ilford",
+      "address": "209 Ilford Lane, Ilford, IG1 2RU",
+      "city": "Ilford",
+      "postcode": "IG1 2RU",
+      "phone": "02086374050",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.55201829,
+      "longitude": 0.07404507,
+      "google_maps_url": "https://maps.app.goo.gl/vHY8UHymXEYwsuV39",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "gants-hill",
+      "name": "Gants Hill Ilford",
+      "address": "374, Cranbrook Road, Gants Hill, IG2 6HW",
+      "city": "Gants Hill",
+      "postcode": "IG2 6HW",
+      "phone": "02089266011",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.575062,
+      "longitude": 0.066594,
+      "google_maps_url": "https://maps.app.goo.gl/coVq94yAEc1vkBor7",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "harrow",
+      "name": "Harrow",
+      "address": "11 Station Rd, Harrow, HA1 2UF",
+      "city": "Harrow",
+      "postcode": "HA1 2UF",
+      "phone": "02082486393",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.58876655,
+      "longitude": -0.33267284,
+      "google_maps_url": "https://maps.app.goo.gl/4YQVPLwy3YNcyi9e7",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "southall",
+      "name": "Southall",
+      "address": "30 South Road, Southall, UB1 1RR",
+      "city": "Southall",
+      "postcode": "UB1 1RR",
+      "phone": "02030936446",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.51005247,
+      "longitude": -0.37637452,
+      "google_maps_url": "https://maps.app.goo.gl/EXdMxLcqLMwzMGyY6",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "tooting",
+      "name": "Tooting",
+      "address": "233 Upper Tooting Rd, London, SW17 7TG",
+      "city": "London",
+      "postcode": "SW17 7TG",
+      "phone": "02089227549",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.43005427,
+      "longitude": -0.1657334,
+      "google_maps_url": "https://maps.app.goo.gl/No8RLS1ifNxHDtW77",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "romford",
+      "name": "Romford",
+      "address": "Unit 2, 7 Station Chambers, Victoria Road, Romford, RM1 2HS",
+      "city": "Romford",
+      "postcode": "RM1 2HS",
+      "phone": "01708531002",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.57438259,
+      "longitude": 0.1843223,
+      "google_maps_url": "https://maps.app.goo.gl/xyx97S2NVbBDfL7r8",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "leicester",
+      "name": "Leicester",
+      "address": "6 Horsefair St, Leicester, LE1 5BN",
+      "city": "Leicester",
+      "postcode": "LE1 5BN",
+      "phone": "01165079748",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 52.63424267,
+      "longitude": -1.13201339,
+      "google_maps_url": "https://maps.app.goo.gl/iqHzPt7jYC9T7bCu7",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "birmingham",
+      "name": "Birmingham",
+      "address": "700 Stratford Rd, Birmingham, B11 4AT",
+      "city": "Birmingham",
+      "postcode": "B11 4AT",
+      "phone": "07424478896",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 52.44797588,
+      "longitude": -1.86089924,
+      "google_maps_url": "https://maps.app.goo.gl/UPEafsa5yAZRqFf2A",
+      "image_url": "",
+      "hours_summary": "Daily 9:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    },
+    {
+      "id": "southend-on-sea",
+      "name": "Southend-on-sea",
+      "address": "272-274 London Road, Westcliff-on-Sea, SS0 7JG",
+      "city": "Westcliff-on-Sea",
+      "postcode": "SS0 7JG",
+      "phone": "01702 311649",
+      "email": "hello@naanstaap.co.uk",
+      "latitude": 51.540539,
+      "longitude": 0.699513,
+      "google_maps_url": "https://maps.app.goo.gl/zoGN6GwTs9kd8H289",
+      "image_url": "",
+      "hours_summary": "Daily 10:00 am - 11:00 pm",
+      "hours": [
+        {
+          "day": "Monday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Tuesday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Wednesday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Thursday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Friday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Saturday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        },
+        {
+          "day": "Sunday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_closed": false
+        }
+      ],
+      "delivery_available": true,
+      "takeaway_available": true,
+      "dine_in_available": true
+    }
+  ],
+  "allergens": {
+    "disclaimer": "Due to the nature of our business we cannot guarantee that food prepared on these premises is free from allergenic ingredients.",
+    "note": "Optional extras and modifications may introduce allergens not listed here. Please check with staff before ordering.",
+    "printable_guide_url": "https://order.naanstaap.co.uk/allergens/print",
+    "allergen_list": [
+      "Celery",
+      "Gluten",
+      "Crustaceans",
+      "Eggs",
+      "Fish",
+      "Lupin",
+      "Milk",
+      "Molluscs",
+      "Mustard",
+      "Tree Nuts",
+      "Peanuts",
+      "Sesame Seeds",
+      "Soybeans",
+      "Sulphur Dioxide and Sulphites"
+    ],
+    "items": [
+      {
+        "id": "lamb-qeema-masala-naan",
+        "category": "Lamb Stuffed Naan",
+        "name": "Lamb Qeema Masala Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sesame Seeds"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "lamb-dum-qeema-naan",
+        "category": "Lamb Stuffed Naan",
+        "name": "Lamb Dum Qeema Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-achaari-naan",
+        "category": "Chicken Stuffed Naan",
+        "name": "Chicken Achaari Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-karahi-naan",
+        "category": "Chicken Stuffed Naan",
+        "name": "Chicken Karahi Naan",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "chicken-dum-qeema-naan",
+        "category": "Chicken Stuffed Naan",
+        "name": "Chicken Dum Qeema Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "naga-chicken-naan",
+        "category": "Chicken Stuffed Naan",
+        "name": "Naga Chicken Naan",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "aloo-masala-naan",
+        "category": "Vegetarian Stuffed Naan",
+        "name": "Aloo Masala Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "palak-paneer-naan",
+        "category": "Vegetarian Stuffed Naan",
+        "name": "Palak Paneer Naan",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "cheese-naan",
+        "category": "Cheese Stuffed Naan",
+        "name": "Cheese Naan",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "aloo-cheese-naan",
+        "category": "Cheese Stuffed Naan",
+        "name": "Aloo Cheese Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-cheese-naan",
+        "category": "Cheese Stuffed Naan",
+        "name": "Chicken Cheese Naan",
+        "contains": [
+          "Fish",
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "nutella-naan",
+        "category": "Sweet Stuffed Naan",
+        "name": "Nutella Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Soybeans",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "pistachio-kunafa-naan",
+        "category": "Sweet Stuffed Naan",
+        "name": "Pistachio Kunafa Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Soybeans",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "peshwari-naan",
+        "category": "Sweet Stuffed Naan",
+        "name": "Peshwari Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds"
+        ]
+      },
+      {
+        "id": "roghni-naan",
+        "category": "Plain Naan",
+        "name": "Roghni Naan",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sesame Seeds"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "tandoori-chapati",
+        "category": "Plain Naan",
+        "name": "Tandoori Chapati",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "kalonji-naan",
+        "category": "Plain Naan",
+        "name": "Kalonji Naan",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Sesame Seeds",
+          "Celery"
+        ]
+      },
+      {
+        "id": "garlic-naan",
+        "category": "Plain Naan",
+        "name": "Garlic Naan",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "bhatura",
+        "category": "Plain Naan",
+        "name": "Bhatura",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "channay-only",
+        "category": "Curries",
+        "name": "Channay Only",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-jalfrezi-only",
+        "category": "Curries",
+        "name": "Chicken Jalfrezi Only",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "butter-chicken-only",
+        "category": "Curries",
+        "name": "Butter Chicken Only",
+        "contains": [
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "lamb-hareesa-only",
+        "category": "Curries",
+        "name": "Lamb Hareesa Only",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "anarkali-daal-only",
+        "category": "Curries",
+        "name": "Anarkali Daal Only",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "plain-paratha",
+        "category": "Paratha",
+        "name": "Plain Paratha",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "sweet-paratha",
+        "category": "Paratha",
+        "name": "Sweet Paratha",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "aaloo-paratha",
+        "category": "Paratha",
+        "name": "Aaloo Paratha",
+        "contains": [
+          "Gluten",
+          "Mustard"
+        ],
+        "may_contain": [
+          "Milk",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "gobi-paratha",
+        "category": "Paratha",
+        "name": "Gobi Paratha",
+        "contains": [
+          "Gluten",
+          "Mustard"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "palak-paneer-paratha",
+        "category": "Paratha",
+        "name": "Palak Paneer Paratha",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-achari-paratha",
+        "category": "Paratha",
+        "name": "Chicken Achari Paratha",
+        "contains": [
+          "Gluten",
+          "Mustard",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": [
+          "Milk",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-dum-paratha",
+        "category": "Paratha",
+        "name": "Chicken Dum Paratha",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": [
+          "Milk",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "lamb-dum-paratha",
+        "category": "Paratha",
+        "name": "Lamb Dum Paratha",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "anda-paratha-roll",
+        "category": "Roll, Buns & Wraps",
+        "name": "Anda Paratha Roll",
+        "contains": [
+          "Eggs",
+          "Gluten"
+        ],
+        "may_contain": [
+          "Milk",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "bun-kebab",
+        "category": "Roll, Buns & Wraps",
+        "name": "Bun Kebab",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-wrap",
+        "category": "Roll, Buns & Wraps",
+        "name": "Chicken Wrap",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Mustard"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-kebab-wrap",
+        "category": "Roll, Buns & Wraps",
+        "name": "Chicken Kebab Wrap",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Mustard"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "butter-chicken-rice-bowl",
+        "category": "Rice Bowl",
+        "name": "Butter Chicken Rice Bowl",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Celery"
+        ]
+      },
+      {
+        "id": "anarkali-daal-rice-bowl",
+        "category": "Rice Bowl",
+        "name": "Anarkali Daal Rice Bowl",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-jalfrezi-rice-bowl",
+        "category": "Rice Bowl",
+        "name": "Chicken Jalfrezi Rice Bowl",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-biryani",
+        "category": "Rice Bowl",
+        "name": "Chicken Biryani",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "plain-rice",
+        "category": "Rice Bowl",
+        "name": "Plain Rice",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "bombay-sandwich",
+        "category": "Sandwich",
+        "name": "Bombay Sandwich",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-club-sandwich",
+        "category": "Sandwich",
+        "name": "Chicken Club Sandwich",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Mustard",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Milk",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-peri-tikka-sandwich",
+        "category": "Sandwich",
+        "name": "Chicken Peri Tikka Sandwich",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "desi-samosa-chaat",
+        "category": "Street Food",
+        "name": "Desi Samosa Chaat",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "lahori-dahi-channa-chaat",
+        "category": "Street Food",
+        "name": "Lahori Dahi Channa Chaat",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Mustard",
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "multani-gol-gappa",
+        "category": "Street Food",
+        "name": "Multani Gol Gappa",
+        "contains": [
+          "Celery",
+          "Gluten",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "smokey-chicken-loaded-chips",
+        "category": "Loaded Chips",
+        "name": "Smokey Chicken Loaded Chips",
+        "contains": [
+          "Eggs",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "halloumi-loaded-chips",
+        "category": "Loaded Chips",
+        "name": "Halloumi Loaded Chips",
+        "contains": [
+          "Eggs",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Celery"
+        ]
+      },
+      {
+        "id": "creamy-pepper-chicken-panini",
+        "category": "Panini & Bakes",
+        "name": "Creamy Pepper Chicken Panini",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-peri-tikka-panini",
+        "category": "Panini & Bakes",
+        "name": "Chicken Peri Tikka Panini",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Mustard"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-cheese-bake",
+        "category": "Panini & Bakes",
+        "name": "Chicken Cheese Bake",
+        "contains": [
+          "Eggs",
+          "Fish",
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Sesame Seeds",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-dum-bake",
+        "category": "Panini & Bakes",
+        "name": "Chicken Dum Bake",
+        "contains": [
+          "Milk",
+          "Sesame Seeds",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Mustard",
+          "Peanuts",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "palak-paneer-bake",
+        "category": "Panini & Bakes",
+        "name": "Palak Paneer Bake",
+        "contains": [
+          "Eggs",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "english-breakfast",
+        "category": "Deals",
+        "name": "English Breakfast",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "all-day-breakfast-deal",
+        "category": "Deals",
+        "name": "All Day Breakfast Deal",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "sharer-box",
+        "category": "Sharer Box",
+        "name": "Sharer Box",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Molluscs",
+          "Mustard",
+          "Sesame Seeds",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": [
+          "Milk",
+          "Peanuts",
+          "Soybeans",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "mini-cheese-naan-with-chips",
+        "category": "Kids Menu",
+        "name": "Mini Cheese Naan with Chips",
+        "contains": [
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "mini-chicken-cheese-naan-with-chips",
+        "category": "Kids Menu",
+        "name": "Mini Chicken Cheese Naan with Chips",
+        "contains": [
+          "Fish",
+          "Gluten",
+          "Milk",
+          "Mustard",
+          "Sesame Seeds"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chicken-n-chips",
+        "category": "Kids Menu",
+        "name": "Chicken n Chips",
+        "contains": [
+          "Gluten"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "tiramisu",
+        "category": "Sweets",
+        "name": "Tiramisu",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": [
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "lotus-biscoff-milk-cake",
+        "category": "Sweets",
+        "name": "Lotus Biscoff Milk Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "rose-and-pistachio-milk-cake",
+        "category": "Sweets",
+        "name": "Rose & Pistachio Milk Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts"
+        ]
+      },
+      {
+        "id": "karak-maska",
+        "category": "Sweets",
+        "name": "Karak Maska",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "naan-khatai",
+        "category": "Sweets",
+        "name": "Naan Khatai",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "almond-cake",
+        "category": "Sweets",
+        "name": "Almond Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "suji-halwa",
+        "category": "Sweets",
+        "name": "Suji halwa",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "gajar-halwa",
+        "category": "Sweets",
+        "name": "Gajar Halwa",
+        "contains": [
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds"
+        ]
+      },
+      {
+        "id": "gulab-jamun",
+        "category": "Sweets",
+        "name": "Gulab Jamun",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds"
+        ]
+      },
+      {
+        "id": "brownie-bite",
+        "category": "Sweets",
+        "name": "Brownie Bite",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "cinnamon-bite",
+        "category": "Sweets",
+        "name": "Cinnamon Bite",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Eggs",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "chocolate-lava-cake",
+        "category": "Sweets",
+        "name": "Chocolate Lava Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts",
+          "Celery"
+        ]
+      },
+      {
+        "id": "chocolate-fudge-cake",
+        "category": "Sweets",
+        "name": "Chocolate Fudge Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "hazelnut-and-pistachio-cake",
+        "category": "Sweets",
+        "name": "Hazelnut & Pistachio Cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Soybeans"
+        ]
+      },
+      {
+        "id": "pistachio-dream-cake",
+        "category": "Sweets",
+        "name": "Pistachio Dream cake",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk",
+          "Soybeans",
+          "Tree Nuts"
+        ],
+        "may_contain": [
+          "Sesame Seeds",
+          "Sulphur Dioxide and Sulphites"
+        ]
+      },
+      {
+        "id": "boiled-egg",
+        "category": "Sides",
+        "name": "Boiled Egg",
+        "contains": [
+          "Eggs"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "chips",
+        "category": "Sides",
+        "name": "Chips",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "chicken-patties",
+        "category": "Sides",
+        "name": "Chicken Patties",
+        "contains": [
+          "Eggs",
+          "Gluten",
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "samosa",
+        "category": "Sides",
+        "name": "Samosa",
+        "contains": [
+          "Gluten",
+          "Milk",
+          "Mustard"
+        ],
+        "may_contain": [
+          "Peanuts",
+          "Sesame Seeds",
+          "Soybeans",
+          "Sulphur Dioxide and Sulphites",
+          "Tree Nuts"
+        ]
+      },
+      {
+        "id": "sm-ore-cookies-and-cream",
+        "category": "Ice Cream",
+        "name": "Sm-Ore (Cookies & Cream)",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "paan-burst",
+        "category": "Ice Cream",
+        "name": "Paan Burst",
+        "contains": [
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "saffron-pistachio",
+        "category": "Ice Cream",
+        "name": "Saffron Pistachio",
+        "contains": [
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "silky-cocoa-escape-chocolate",
+        "category": "Ice Cream",
+        "name": "Silky Cocoa Escape (Chocolate)",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "mango",
+        "category": "Ice Cream",
+        "name": "Mango",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "lemonade",
+        "category": "Special Drinks",
+        "name": "Lemonade",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "mango-lassi",
+        "category": "Special Drinks",
+        "name": "Mango Lassi",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "pink-tea-kashmiri-chai",
+        "category": "Hot Drink (Chai)",
+        "name": "Pink Tea ( Kashmiri Chai )",
+        "contains": [
+          "Milk",
+          "Tree Nuts"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "green-tea",
+        "category": "Hot Drink (Chai)",
+        "name": "Green Tea",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "karak-chai",
+        "category": "Hot Drink (Chai)",
+        "name": "Karak Chai",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "english-tea",
+        "category": "Hot Drink (Chai)",
+        "name": "English Tea",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "6-cup-tea-flask",
+        "category": "Hot Drink (Chai)",
+        "name": "6 Cup Tea Flask",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "americano",
+        "category": "Coffee",
+        "name": "Americano",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "cappuccino",
+        "category": "Coffee",
+        "name": "Cappuccino",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "espresso",
+        "category": "Coffee",
+        "name": "Espresso",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "flat-white",
+        "category": "Coffee",
+        "name": "Flat White",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "hot-chocolate",
+        "category": "Coffee",
+        "name": "Hot Chocolate",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": [
+          "Gluten"
+        ]
+      },
+      {
+        "id": "latte",
+        "category": "Coffee",
+        "name": "Latte",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "macchiato",
+        "category": "Coffee",
+        "name": "Macchiato",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "mocha",
+        "category": "Coffee",
+        "name": "Mocha",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "zanti-cola",
+        "category": "Cold Drinks",
+        "name": "Zanti Cola",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "zanti-zero",
+        "category": "Cold Drinks",
+        "name": "Zanti Zero",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "zanti-orange",
+        "category": "Cold Drinks",
+        "name": "Zanti Orange",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "zanti-zest",
+        "category": "Cold Drinks",
+        "name": "Zanti Zest",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "coke",
+        "category": "Cold Drinks",
+        "name": "Coke",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "diet-coke",
+        "category": "Cold Drinks",
+        "name": "Diet Coke",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "water-bottle",
+        "category": "Cold Drinks",
+        "name": "Water Bottle",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "fruit-shoot-black",
+        "category": "Cold Drinks",
+        "name": "Fruit Shoot Black",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "fruit-shoot-orange",
+        "category": "Cold Drinks",
+        "name": "Fruit Shoot Orange",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "fanta",
+        "category": "Cold Drinks",
+        "name": "Fanta",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "sprite",
+        "category": "Cold Drinks",
+        "name": "Sprite",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "blue-lagoon-mojito",
+        "category": "Coolers",
+        "name": "Blue Lagoon Mojito",
+        "contains": [
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "blueberry-mojito",
+        "category": "Coolers",
+        "name": "Blueberry Mojito",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "classic-mojito",
+        "category": "Coolers",
+        "name": "Classic Mojito",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "mango-tango-mojito",
+        "category": "Coolers",
+        "name": "Mango Tango Mojito",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "strawberry-mojito",
+        "category": "Coolers",
+        "name": "Strawberry Mojito",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "peach-iced-tea",
+        "category": "Coolers",
+        "name": "Peach Iced Tea",
+        "contains": [],
+        "may_contain": []
+      },
+      {
+        "id": "brazilian-lemonade",
+        "category": "Coolers",
+        "name": "Brazilian Lemonade",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "pina-colada",
+        "category": "Coolers",
+        "name": "Pina Colada",
+        "contains": [
+          "Milk"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "hot-sauce",
+        "category": "Dips",
+        "name": "Hot Sauce",
+        "contains": [
+          "Eggs",
+          "Gluten"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "yoghurt-mint-sauce",
+        "category": "Dips",
+        "name": "Yoghurt Mint Sauce",
+        "contains": [
+          "Milk",
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "white-sauce",
+        "category": "Dips",
+        "name": "White Sauce",
+        "contains": [
+          "Milk",
+          "Mustard"
+        ],
+        "may_contain": []
+      },
+      {
+        "id": "mint-sauce",
+        "category": "Dips",
+        "name": "Mint Sauce",
+        "contains": [
+          "Sulphur Dioxide and Sulphites"
+        ],
+        "may_contain": [
+          "Celery"
+        ]
+      },
+      {
+        "id": "pickle",
+        "category": "Dips",
+        "name": "Pickle",
+        "contains": [
+          "Mustard"
+        ],
+        "may_contain": [
+          "Gluten",
+          "Peanuts",
+          "Tree Nuts"
+        ]
+      }
+    ]
+  }
+}

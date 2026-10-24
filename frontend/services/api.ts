@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://10.2.54.74:8005';
+const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://192.168.1.138:8005';
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = '@naanstaap_access_token';
@@ -95,6 +95,7 @@ export interface MenuItem {
   is_vegetarian: boolean;
   is_popular: boolean;
   is_spicy: boolean;
+  is_new?: boolean;
   calories: number | null;
   allergens: string[];
   customizations: string[];
@@ -119,9 +120,27 @@ export interface Store {
   latitude: number;
   longitude: number;
   hours: StoreHours[];
+  hours_summary: string;
   is_open_now: boolean;
-  features: string[];
-  delivery_radius_miles: number;
+  google_maps_url: string;
+  image_url: string;
+  delivery_available: boolean;
+  takeaway_available: boolean;
+  dine_in_available: boolean;
+}
+
+export interface AllergenGuide {
+  disclaimer: string;
+  note: string;
+  printable_guide_url: string;
+  allergen_list: string[];
+  items: {
+    id: string;
+    category: string;
+    name: string;
+    contains: string[];
+    may_contain: string[];
+  }[];
 }
 
 export interface StoreHours {
@@ -135,9 +154,8 @@ export interface ChaiItem {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: number | null;
   is_signature: boolean;
-  caffeine_level: string;
   image_url: string;
   customizations: string[];
 }
@@ -259,7 +277,10 @@ export const authAPI = {
   refreshToken: (refreshToken: string) => 
     api.post('/api/auth/refresh', { refresh_token: refreshToken }),
 
-  logout: () => api.post('/api/auth/logout'),
+  logout: async () =>
+    api.post('/api/auth/logout', {
+      refresh_token: await tokenService.getRefreshToken(),
+    }),
 
   getProfile: () => api.get<User>('/api/auth/profile'),
 
@@ -331,6 +352,22 @@ export const storesAPI = {
     api.get(`/api/stores/${storeId}/reviews`, { params }),
 };
 
+export interface OrderingConfig {
+  delivery_fee: number;
+  free_delivery_threshold: number;
+  min_order_amount: number;
+  points_per_pound: number;
+  support_email: string;
+}
+
+export const configAPI = {
+  get: () => api.get<OrderingConfig>('/api/config'),
+};
+
+export const allergensAPI = {
+  get: () => api.get<AllergenGuide>('/api/allergens'),
+};
+
 // Deals
 export const dealsAPI = {
   getAll: () => api.get<Deal[]>('/api/deals'),
@@ -362,13 +399,56 @@ export const loyaltyAPI = {
   getHistory: (page = 1, limit = 20) => 
     api.get('/api/loyalty/history', { params: { page, limit } }),
 
-  redeem: (points: number) => api.post('/api/loyalty/redeem', { points }),
+  redeem: (points: number) =>
+    api.post('/api/loyalty/redeem', { points_to_redeem: points }),
 
   getRewards: () => api.get('/api/loyalty/rewards'),
 };
 
 // Orders
+export interface PlaceOrderPayload {
+  items: {
+    item_id: string;
+    name: string;
+    quantity: number;
+    customizations: string[];
+    special_instructions?: string;
+  }[];
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
+  store_id: string;
+  order_type: 'delivery' | 'pickup' | 'dine-in';
+  delivery_address?: string | null;
+  payment_method: 'pay_in_store' | 'cash_on_delivery' | 'card_on_delivery';
+  special_instructions?: string;
+  discount_code?: string;
+}
+
+export interface PlaceOrderResponse {
+  id: string;
+  order_number: number;
+  status: string;
+  subtotal: number;
+  discount: number;
+  delivery_fee: number;
+  total: number;
+  estimated_time: number;
+  points_to_earn: number;
+}
+
 export const ordersAPI = {
+  place: (payload: PlaceOrderPayload) =>
+    api.post<PlaceOrderResponse>('/api/orders', payload),
+
+  validateDiscount: (code: string, subtotal: number) =>
+    api.post<{ code: string; discount: number; description: string }>(
+      '/api/orders/validate-discount',
+      { code, subtotal }
+    ),
+
+  cancel: (orderId: string) => api.post(`/api/orders/${orderId}/cancel`),
+
   getHistory: (params?: {
     page?: number;
     limit?: number;
@@ -478,6 +558,10 @@ export const contactAPI = {
 
 // Bookings
 export const bookingsAPI = {
+  getMine: () => api.get('/api/bookings'),
+
+  cancel: (bookingId: string) => api.post(`/api/bookings/${bookingId}/cancel`),
+
   create: (data: {
     store_id: string;
     customer_name: string;
@@ -490,4 +574,29 @@ export const bookingsAPI = {
   }) => api.post('/api/bookings', data),
 };
 
+// Franchise / catering / career enquiries
+export const enquiriesAPI = {
+  submit: (data: {
+    type: 'franchise' | 'catering' | 'career';
+    name: string;
+    email: string;
+    phone: string;
+    message?: string;
+    details?: Record<string, string>;
+  }) => api.post('/api/enquiries', data),
+};
+
+// Turn an axios error into a message fit for the user.
+export const apiErrorMessage = (
+  error: any,
+  fallback = 'Something went wrong. Please try again.'
+) => {
+  if (error?.response?.data?.detail) return String(error.response.data.detail);
+  if (error?.code === 'ECONNABORTED' || error?.message === 'Network Error') {
+    return "Can't reach Naan Staap right now. Check your connection and try again.";
+  }
+  return fallback;
+};
+
+export { API_URL };
 export default api;

@@ -1,271 +1,75 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TextInput,
-  Alert,
-  Modal,
-  ActivityIndicator,
-} from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useCartStore } from "../../store/cartStore";
-import axios from "axios";
-import { useTheme } from "../../theme/ThemeContext";
-import {
-  AnimatedButton,
-  FadeInView,
-  SlideInView,
-  ScaleInView,
-  BounceView,
-} from "../../components/AnimatedComponents";
-import { EmptyState, SuccessAnimation } from "../../components/EmptyState";
-import {
-  lightHaptic,
-  mediumHaptic,
-  successHaptic,
-  errorHaptic,
-  removeItemHaptic,
-} from "../../utils/haptics";
-
-const BRAND_PURPLE = "#6B2C5F";
-const BRAND_GOLD = "#D4A84B";
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "";
+import { useCartStore, lineKey } from "../../store/cartStore";
+import { useCheckoutStore } from "../../store/checkoutStore";
+import { useAuthStore } from "../../store/authStore";
+import { useTheme, BRAND, FONTS } from "../../theme/ThemeContext";
+import { BounceView } from "../../components/AnimatedComponents";
+import { EmptyState } from "../../components/EmptyState";
+import { BrandButton, formatPrice } from "../../components/ui";
+import { lightHaptic, removeItemHaptic } from "../../utils/haptics";
 
 export default function CartScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
-  const {
-    items,
-    subtotal,
-    deliveryFee,
-    total,
-    updateQuantity,
-    removeItem,
-    clearCart,
-  } = useCartStore();
+  const { items, subtotal, updateQuantity, removeItem, clearCart } = useCartStore();
+  const promoCode = useCheckoutStore((s) => s.promoCode);
+  const { isAuthenticated } = useAuthStore();
 
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [orderType, setOrderType] = useState<"delivery" | "pickup" | "dine-in">(
-    "delivery"
-  );
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [specialInstructions, setSpecialInstructions] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
-  const [orderId, setOrderId] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const handleQuantityChange = (itemId: string, change: number) => {
-    const item = items.find((i) => i.item_id === itemId);
-    if (item) {
-      const newQuantity = item.quantity + change;
-      if (newQuantity <= 0) {
-        errorHaptic();
-        Alert.alert("Remove Item", "Remove this item from cart?", [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Remove",
-            style: "destructive",
-            onPress: () => {
-              removeItemHaptic();
-              removeItem(itemId);
-            },
+  const changeQuantity = (key: string, current: number, change: number) => {
+    const next = current + change;
+    if (next <= 0) {
+      Alert.alert("Remove item", "Remove this item from your basket?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            removeItemHaptic();
+            removeItem(key);
           },
-        ]);
-      } else {
-        lightHaptic();
-        updateQuantity(itemId, newQuantity);
-      }
-    }
-  };
-
-  const handleCheckout = async () => {
-    if (!customerName || !customerPhone || !customerEmail) {
-      errorHaptic();
-      Alert.alert("Missing Information", "Please fill in all required fields");
+        },
+      ]);
       return;
     }
-    if (orderType === "delivery" && !deliveryAddress) {
-      errorHaptic();
-      Alert.alert("Missing Address", "Please enter a delivery address");
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      let cartId = "";
-      for (const item of items) {
-        const response = await axios.post(`${API_URL}/api/cart/add`, {
-          cart_id: cartId || null,
-          item_id: item.item_id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          customizations: item.customizations,
-          special_instructions: item.special_instructions,
-        });
-        cartId = response.data.id;
-      }
-
-      const orderResponse = await axios.post(`${API_URL}/api/orders`, {
-        cart_id: cartId,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        customer_email: customerEmail,
-        delivery_address: orderType === "delivery" ? deliveryAddress : null,
-        store_id: "1",
-        order_type: orderType,
-        payment_method: "cash",
-        special_instructions: specialInstructions,
-      });
-
-      setOrderId(orderResponse.data.id);
-      clearCart();
-      setShowSuccess(true);
-      successHaptic();
-      setTimeout(() => {
-        setShowSuccess(false);
-        setOrderComplete(true);
-      }, 1500);
-    } catch (error) {
-      console.error("Order error:", error);
-      errorHaptic();
-      Alert.alert("Error", "Failed to place order. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
+    lightHaptic();
+    updateQuantity(key, Math.min(50, next));
   };
-
-  if (showSuccess) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background, paddingTop: insets.top },
-        ]}
-      >
-        <View style={styles.successContainer}>
-          <SuccessAnimation />
-        </View>
-      </View>
-    );
-  }
-
-  if (orderComplete) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background, paddingTop: insets.top },
-        ]}
-      >
-        <ScaleInView style={styles.successContainer}>
-          <View style={styles.successIcon}>
-            <Ionicons
-              name="checkmark-circle"
-              size={80}
-              color={colors.success}
-            />
-          </View>
-          <Text style={[styles.successTitle, { color: colors.text }]}>
-            Order Placed!
-          </Text>
-          <Text style={[styles.successMessage, { color: colors.textMuted }]}>
-            Your order has been confirmed.
-          </Text>
-          <FadeInView
-            delay={300}
-            style={[
-              styles.orderIdContainer,
-              { backgroundColor: colors.surface },
-            ]}
-          >
-            <Text style={[styles.orderIdLabel, { color: colors.textMuted }]}>
-              Order ID:
-            </Text>
-            <Text style={styles.orderIdText}>
-              {orderId.slice(0, 8).toUpperCase()}
-            </Text>
-          </FadeInView>
-          <Text style={[styles.estimatedTime, { color: colors.textMuted }]}>
-            Estimated time: 25-35 minutes
-          </Text>
-          <SlideInView direction="bottom" delay={500}>
-            <AnimatedButton
-              style={styles.continueBtn}
-              onPress={() => {
-                mediumHaptic();
-                setOrderComplete(false);
-                setShowCheckout(false);
-                router.push("/");
-              }}
-            >
-              <Text style={styles.continueBtnText}>Continue Shopping</Text>
-            </AnimatedButton>
-          </SlideInView>
-        </ScaleInView>
-      </View>
-    );
-  }
 
   if (items.length === 0) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background, paddingTop: insets.top },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            Your Cart
-          </Text>
+          <Text style={styles.headerScript}>Hungry?</Text>
+          <Text style={styles.headerTitle}>Your basket</Text>
         </View>
         <EmptyState
-          icon="cart-outline"
-          title="Your cart is empty"
-          message="Add some delicious items from our menu!"
-          action={
-            <AnimatedButton
-              style={styles.browseBtn}
-              onPress={() => {
-                mediumHaptic();
-                router.push("/menu");
-              }}
-            >
-              <Ionicons name="restaurant" size={20} color="#FFF" />
-              <Text style={styles.browseBtnText}>Browse Menu</Text>
-            </AnimatedButton>
-          }
+          icon="bag-outline"
+          title="Your basket is empty"
+          message="Stuffed naan, karak chai, loaded fries… go on, treat yourself."
+          actionLabel="Browse the menu"
+          onAction={() => router.push("/menu")}
         />
       </View>
     );
   }
 
+  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: colors.background, paddingTop: insets.top },
-      ]}
-    >
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Your Cart
-        </Text>
-        <AnimatedButton
-          onPress={() => {
-            errorHaptic();
-            Alert.alert("Clear Cart", "Remove all items?", [
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.header, styles.headerRow]}>
+        <View>
+          <Text style={styles.headerScript}>{count} {count === 1 ? "item" : "items"}</Text>
+          <Text style={styles.headerTitle}>Your basket</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert("Clear basket", "Remove everything from your basket?", [
               { text: "Cancel", style: "cancel" },
               {
                 text: "Clear",
@@ -275,490 +79,137 @@ export default function CartScreen() {
                   clearCart();
                 },
               },
-            ]);
-          }}
+            ])
+          }
+          hitSlop={10}
         >
-          <Text style={styles.clearText}>Clear All</Text>
-        </AnimatedButton>
+          <Text style={[styles.clear, { color: colors.error }]}>Clear</Text>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.cartList} showsVerticalScrollIndicator={false}>
-        {items.map((item, index) => (
-          <SlideInView
-            key={`${item.item_id}-${index}`}
-            direction="right"
-            delay={index * 80}
-          >
-            <View
-              style={[styles.cartItem, { backgroundColor: colors.surface }]}
-            >
-              <Image
-                source={{ uri: item.image_url }}
-                style={styles.itemImage}
-              />
-              <View style={styles.itemContent}>
-                <Text style={[styles.itemName, { color: colors.text }]}>
+      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+        {items.map((item) => {
+          const key = lineKey(item);
+          return (
+            <View key={key} style={[styles.line, { backgroundColor: colors.surface }]}>
+              <Image source={{ uri: item.image_url }} style={styles.lineImage} />
+              <View style={styles.lineBody}>
+                <Text style={[styles.lineName, { color: colors.text }]} numberOfLines={2}>
                   {item.name}
                 </Text>
                 {item.customizations.length > 0 && (
-                  <Text
-                    style={[
-                      styles.itemCustomizations,
-                      { color: colors.textMuted },
-                    ]}
-                  >
-                    {item.customizations.join(", ")}
+                  <Text style={[styles.lineMeta, { color: colors.textMuted }]}>
+                    {item.customizations.join(" · ")}
                   </Text>
                 )}
-                <Text style={styles.itemPrice}>
-                  £{(item.price * item.quantity).toFixed(2)}
-                </Text>
-              </View>
-              <View style={styles.quantityControls}>
-                <AnimatedButton
-                  style={[
-                    styles.qtyBtn,
-                    { backgroundColor: colors.surfaceLight },
-                  ]}
-                  onPress={() => handleQuantityChange(item.item_id, -1)}
-                >
-                  <Ionicons name="remove" size={16} color={colors.text} />
-                </AnimatedButton>
-                <BounceView trigger={item.quantity}>
-                  <Text style={[styles.qtyText, { color: colors.text }]}>
-                    {item.quantity}
+                {item.special_instructions ? (
+                  <Text style={[styles.lineMeta, { color: colors.textMuted }]} numberOfLines={2}>
+                    “{item.special_instructions}”
                   </Text>
-                </BounceView>
-                <AnimatedButton
-                  style={[
-                    styles.qtyBtn,
-                    { backgroundColor: colors.surfaceLight },
-                  ]}
-                  onPress={() => handleQuantityChange(item.item_id, 1)}
+                ) : null}
+                <Text style={styles.linePrice}>{formatPrice(item.price * item.quantity)}</Text>
+              </View>
+              <View style={styles.qty}>
+                <TouchableOpacity
+                  style={[styles.qtyBtn, { backgroundColor: colors.surfaceLight }]}
+                  onPress={() => changeQuantity(key, item.quantity, 1)}
+                  accessibilityLabel={`Add one ${item.name}`}
                 >
                   <Ionicons name="add" size={16} color={colors.text} />
-                </AnimatedButton>
+                </TouchableOpacity>
+                <BounceView trigger={item.quantity}>
+                  <Text style={[styles.qtyText, { color: colors.text }]}>{item.quantity}</Text>
+                </BounceView>
+                <TouchableOpacity
+                  style={[styles.qtyBtn, { backgroundColor: colors.surfaceLight }]}
+                  onPress={() => changeQuantity(key, item.quantity, -1)}
+                  accessibilityLabel={`Remove one ${item.name}`}
+                >
+                  <Ionicons name={item.quantity === 1 ? "trash-outline" : "remove"} size={16} color={colors.text} />
+                </TouchableOpacity>
               </View>
             </View>
-          </SlideInView>
-        ))}
+          );
+        })}
 
-        {/* Order Summary */}
-        <FadeInView
-          delay={300}
-          style={[styles.summaryCard, { backgroundColor: colors.surface }]}
-        >
-          <Text style={[styles.summaryTitle, { color: colors.text }]}>
-            Order Summary
-          </Text>
-          <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
-              Subtotal
-            </Text>
-            <Text style={[styles.summaryValue, { color: colors.text }]}>
-              £{subtotal.toFixed(2)}
+        <TouchableOpacity style={styles.addMore} onPress={() => router.push("/menu")}>
+          <Ionicons name="add-circle-outline" size={20} color={BRAND.gold} />
+          <Text style={styles.addMoreText}>Add more items</Text>
+        </TouchableOpacity>
+
+        {promoCode && (
+          <View style={[styles.note, { borderColor: BRAND.lime }]}>
+            <Ionicons name="pricetag" size={18} color={BRAND.lime} />
+            <Text style={[styles.noteText, { color: colors.textSecondary }]}>
+              Code <Text style={styles.bold}>{promoCode}</Text> will be applied at checkout.
             </Text>
           </View>
-          <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
-              Delivery Fee
-            </Text>
-            <Text style={[styles.summaryValue, { color: colors.text }]}>
-              £{deliveryFee.toFixed(2)}
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.summaryRow,
-              styles.totalRow,
-              { borderTopColor: colors.border },
-            ]}
+        )}
+        {!isAuthenticated && (
+          <TouchableOpacity
+            style={[styles.note, { borderColor: BRAND.gold }]}
+            onPress={() => router.push("/auth/login")}
           >
-            <Text style={[styles.totalLabel, { color: colors.text }]}>
-              Total
+            <Ionicons name="gift-outline" size={18} color={BRAND.gold} />
+            <Text style={[styles.noteText, { color: colors.textSecondary }]}>
+              <Text style={styles.bold}>Sign in</Text> to earn 10 points for every £1 you spend.
             </Text>
-            <Text style={styles.totalValue}>£{total.toFixed(2)}</Text>
-          </View>
-        </FadeInView>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
-      {/* Checkout Button */}
-      <SlideInView
-        direction="bottom"
-        style={[styles.checkoutContainer, { borderTopColor: colors.border }]}
+      <View
+        style={[
+          styles.footer,
+          { backgroundColor: colors.surface, borderTopColor: colors.border },
+        ]}
       >
-        <AnimatedButton
-          style={styles.checkoutBtn}
-          onPress={() => {
-            mediumHaptic();
-            setShowCheckout(true);
-          }}
-        >
-          <Text style={styles.checkoutBtnText}>Proceed to Checkout</Text>
-          <Ionicons name="arrow-forward" size={20} color="#FFF" />
-        </AnimatedButton>
-      </SlideInView>
-
-      {/* Checkout Modal */}
-      <Modal visible={showCheckout} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View
-            style={[styles.modalContent, { backgroundColor: colors.surface }]}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                Checkout
-              </Text>
-              <AnimatedButton
-                onPress={() => {
-                  lightHaptic();
-                  setShowCheckout(false);
-                }}
-              >
-                <Ionicons name="close" size={24} color={colors.textMuted} />
-              </AnimatedButton>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {/* Order Type */}
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Order Type
-              </Text>
-              <View style={styles.orderTypeContainer}>
-                {(["delivery", "pickup", "dine-in"] as const).map((type) => (
-                  <AnimatedButton
-                    key={type}
-                    style={[
-                      styles.orderTypeBtn,
-                      {
-                        backgroundColor: colors.background,
-                        borderColor: colors.border,
-                      },
-                      orderType === type ? styles.orderTypeActive : {},
-                    ]}
-                    onPress={() => {
-                      lightHaptic();
-                      setOrderType(type);
-                    }}
-                  >
-                    <Ionicons
-                      name={
-                        type === "delivery"
-                          ? "bicycle"
-                          : type === "pickup"
-                          ? "bag-handle"
-                          : "restaurant"
-                      }
-                      size={20}
-                      color={orderType === type ? "#FFF" : colors.textMuted}
-                    />
-                    <Text
-                      style={[
-                        styles.orderTypeText,
-                        orderType === type && styles.orderTypeTextActive,
-                      ]}
-                    >
-                      {type.charAt(0).toUpperCase() +
-                        type.slice(1).replace("-", " ")}
-                    </Text>
-                  </AnimatedButton>
-                ))}
-              </View>
-
-              {/* Customer Details */}
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Your Details
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
-                    color: colors.text,
-                  },
-                ]}
-                placeholder="Full Name *"
-                placeholderTextColor={colors.textMuted}
-                value={customerName}
-                onChangeText={setCustomerName}
-              />
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
-                    color: colors.text,
-                  },
-                ]}
-                placeholder="Phone Number *"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="phone-pad"
-                value={customerPhone}
-                onChangeText={setCustomerPhone}
-              />
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
-                    color: colors.text,
-                  },
-                ]}
-                placeholder="Email *"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={customerEmail}
-                onChangeText={setCustomerEmail}
-              />
-
-              {orderType === "delivery" && (
-                <TextInput
-                  style={[
-                    styles.input,
-                    styles.textArea,
-                    {
-                      backgroundColor: colors.background,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Delivery Address *"
-                  placeholderTextColor={colors.textMuted}
-                  multiline
-                  numberOfLines={3}
-                  textAlignVertical="top"
-                  value={deliveryAddress}
-                  onChangeText={setDeliveryAddress}
-                />
-              )}
-
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
-                    color: colors.text,
-                  },
-                ]}
-                placeholder="Special Instructions (optional)"
-                placeholderTextColor={colors.textMuted}
-                multiline
-                numberOfLines={2}
-                textAlignVertical="top"
-                value={specialInstructions}
-                onChangeText={setSpecialInstructions}
-              />
-
-              {/* Total */}
-              <View
-                style={[
-                  styles.checkoutTotal,
-                  { backgroundColor: colors.background },
-                ]}
-              >
-                <Text
-                  style={[styles.checkoutTotalLabel, { color: colors.text }]}
-                >
-                  Total to Pay
-                </Text>
-                <Text style={styles.checkoutTotalValue}>
-                  £{(orderType === "delivery" ? total : subtotal).toFixed(2)}
-                </Text>
-              </View>
-
-              <AnimatedButton
-                style={[
-                  styles.placeOrderBtn,
-                  submitting ? { opacity: 0.7 } : {},
-                ]}
-                onPress={handleCheckout}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <>
-                    <Ionicons name="checkmark-circle" size={20} color="#FFF" />
-                    <Text style={styles.placeOrderText}>Place Order</Text>
-                  </>
-                )}
-              </AnimatedButton>
-            </ScrollView>
-          </View>
+        <View style={styles.totalRow}>
+          <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Subtotal</Text>
+          <Text style={styles.totalValue}>{formatPrice(subtotal)}</Text>
         </View>
-      </Modal>
+        <Text style={[styles.footerHint, { color: colors.textMuted }]}>
+          Delivery fees and offers are worked out at checkout.
+        </Text>
+        <BrandButton title="Go to checkout" icon="arrow-forward" onPress={() => router.push("/checkout")} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  headerScript: { fontFamily: FONTS.script, fontSize: 24, color: BRAND.orange },
+  headerTitle: { fontSize: 32, fontWeight: "900", color: BRAND.gold, marginTop: -4 },
+  clear: { fontSize: 15, fontWeight: "700", marginBottom: 8 },
+  list: { padding: 16, paddingBottom: 24 },
+  line: { flexDirection: "row", borderRadius: 18, padding: 12, marginBottom: 12, gap: 12 },
+  lineImage: { width: 72, height: 72, borderRadius: 14 },
+  lineBody: { flex: 1 },
+  lineName: { fontSize: 15, fontWeight: "800" },
+  lineMeta: { fontSize: 12, marginTop: 3 },
+  linePrice: { color: BRAND.gold, fontSize: 15, fontWeight: "900", marginTop: 6 },
+  qty: { alignItems: "center", justifyContent: "space-between" },
+  qtyBtn: { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" },
+  qtyText: { fontSize: 16, fontWeight: "900", marginVertical: 2 },
+  addMore: { flexDirection: "row", alignItems: "center", gap: 8, alignSelf: "center", padding: 10 },
+  addMoreText: { color: BRAND.gold, fontWeight: "800", fontSize: 15 },
+  note: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
-  },
-  headerTitle: { fontSize: 28, fontWeight: "bold" },
-  clearText: { color: "#E53935", fontSize: 14, fontWeight: "600" },
-  browseBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: BRAND_PURPLE,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    gap: 8,
-  },
-  browseBtnText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
-  cartList: { flex: 1, padding: 16 },
-  cartItem: {
-    flexDirection: "row",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-  },
-  itemImage: { width: 70, height: 70, borderRadius: 8 },
-  itemContent: { flex: 1, marginLeft: 12, justifyContent: "center" },
-  itemName: { fontSize: 16, fontWeight: "600" },
-  itemCustomizations: { fontSize: 12, marginTop: 2 },
-  itemPrice: {
-    color: BRAND_GOLD,
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 4,
-  },
-  quantityControls: { flexDirection: "row", alignItems: "center", gap: 8 },
-  qtyBtn: {
-    width: 28,
-    height: 28,
+    gap: 10,
+    borderWidth: 1,
     borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 12,
+    marginTop: 12,
   },
-  qtyText: { fontSize: 16, fontWeight: "bold", width: 24, textAlign: "center" },
-  summaryCard: { borderRadius: 16, padding: 20, marginTop: 12 },
-  summaryTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 16 },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  summaryLabel: { fontSize: 14 },
-  summaryValue: { fontSize: 14 },
-  totalRow: { borderTopWidth: 1, paddingTop: 12, marginTop: 4 },
-  totalLabel: { fontSize: 18, fontWeight: "bold" },
-  totalValue: { color: BRAND_GOLD, fontSize: 20, fontWeight: "bold" },
-  checkoutContainer: { padding: 16, paddingBottom: 24, borderTopWidth: 1 },
-  checkoutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: BRAND_PURPLE,
-    paddingVertical: 16,
-    borderRadius: 12,
-    gap: 8,
-  },
-  checkoutBtnText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    maxHeight: "90%",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  modalTitle: { fontSize: 24, fontWeight: "bold" },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 16,
-    marginBottom: 12,
-  },
-  orderTypeContainer: { flexDirection: "row", gap: 12 },
-  orderTypeBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 8,
-    borderWidth: 1,
-  },
-  orderTypeActive: { backgroundColor: BRAND_PURPLE, borderColor: BRAND_PURPLE },
-  orderTypeText: { color: "#888", fontSize: 12, fontWeight: "500" },
-  orderTypeTextActive: { color: "#FFF" },
-  input: {
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-  },
-  textArea: { height: 80, paddingTop: 14 },
-  checkoutTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 16,
-  },
-  checkoutTotalLabel: { fontSize: 16, fontWeight: "600" },
-  checkoutTotalValue: { color: BRAND_GOLD, fontSize: 24, fontWeight: "bold" },
-  placeOrderBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#28A745",
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 20,
-    gap: 8,
-  },
-  placeOrderText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
-  successContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 40,
-  },
-  successIcon: { marginBottom: 20 },
-  successTitle: { fontSize: 28, fontWeight: "bold" },
-  successMessage: { fontSize: 16, marginTop: 8 },
-  orderIdContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 24,
-    gap: 8,
-  },
-  orderIdLabel: { fontSize: 14 },
-  orderIdText: { color: BRAND_GOLD, fontSize: 18, fontWeight: "bold" },
-  estimatedTime: { fontSize: 14, marginTop: 16 },
-  continueBtn: {
-    backgroundColor: BRAND_PURPLE,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    marginTop: 32,
-  },
-  continueBtnText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
+  noteText: { flex: 1, fontSize: 13, lineHeight: 18 },
+  bold: { fontWeight: "800", color: BRAND.gold },
+  footer: { padding: 16, paddingBottom: 18, borderTopWidth: 1, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  totalLabel: { fontSize: 16, fontWeight: "600" },
+  totalValue: { color: BRAND.gold, fontSize: 22, fontWeight: "900" },
+  footerHint: { fontSize: 12, marginTop: 2, marginBottom: 12 },
 });

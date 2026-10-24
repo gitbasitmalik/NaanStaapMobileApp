@@ -1,16 +1,25 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { useColorScheme } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, ReactNode } from "react";
+
+// Brand palette taken from naanstaap.co.uk (Elementor global colours + logo).
+export const BRAND = {
+  purple: "#4C2D55", // site background / headers
+  purpleDeep: "#3A2640", // site footer
+  purpleLight: "#5E3D69",
+  gold: "#FFD74F", // headings, highlights
+  orange: "#F05A22", // call-to-action
+  lime: "#BED630", // fresh / veg accents
+  white: "#FFFFFF",
+} as const;
+
+// Script face used on the website for accent copy ("Grand Hotel").
+export const FONTS = {
+  script: "GrandHotel_400Regular",
+} as const;
 
 export interface ThemeColors {
   primary: string;
   secondary: string;
+  accent: string;
   background: string;
   surface: string;
   surfaceLight: string;
@@ -23,100 +32,43 @@ export interface ThemeColors {
   warning: string;
   card: string;
   overlay: string;
+  onPrimary: string;
 }
 
-export const lightTheme: ThemeColors = {
-  primary: "#6B2C5F",
-  secondary: "#D4A84B",
-  background: "#F5F5F5",
-  surface: "#FFFFFF",
-  surfaceLight: "#F0F0F0",
-  text: "#1A1A1A",
-  textSecondary: "#666666",
-  textMuted: "#999999",
-  border: "#E0E0E0",
-  success: "#28A745",
-  error: "#E53935",
-  warning: "#FFC107",
-  card: "#FFFFFF",
-  overlay: "rgba(0, 0, 0, 0.5)",
+// The website is a single purple theme, so the app uses one brand palette.
+export const brandTheme: ThemeColors = {
+  primary: BRAND.orange,
+  secondary: BRAND.gold,
+  accent: BRAND.lime,
+  background: BRAND.purpleDeep,
+  surface: BRAND.purple,
+  surfaceLight: BRAND.purpleLight,
+  text: "#FFFFFF",
+  textSecondary: "rgba(255, 255, 255, 0.85)",
+  textMuted: "rgba(255, 255, 255, 0.6)",
+  border: "rgba(255, 255, 255, 0.14)",
+  success: BRAND.lime,
+  error: "#FF6B6B",
+  warning: BRAND.gold,
+  card: BRAND.purple,
+  overlay: "rgba(20, 10, 24, 0.75)",
+  onPrimary: "#FFFFFF",
 };
 
-export const darkTheme: ThemeColors = {
-  primary: "#6B2C5F",
-  secondary: "#D4A84B",
-  background: "#0A0A0A",
-  surface: "#1A1A1A",
-  surfaceLight: "#2A2A2A",
-  text: "#FFFFFF",
-  textSecondary: "#CCCCCC",
-  textMuted: "#888888",
-  border: "#333333",
-  success: "#28A745",
-  error: "#E53935",
-  warning: "#FFC107",
-  card: "#1A1A1A",
-  overlay: "rgba(0, 0, 0, 0.7)",
-};
+// Kept for backwards compatibility with older imports.
+export const lightTheme = brandTheme;
+export const darkTheme = brandTheme;
 
 interface ThemeContextType {
   isDark: boolean;
   colors: ThemeColors;
-  toggleTheme: () => void;
-  setTheme: (dark: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_STORAGE_KEY = "@naanstaap_theme";
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const systemColorScheme = useColorScheme();
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    loadTheme();
-  }, []);
-
-  const loadTheme = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme !== null) {
-        setIsDark(savedTheme === "dark");
-      } else {
-        setIsDark(systemColorScheme === "dark");
-      }
-    } catch (error) {
-      console.error("Error loading theme:", error);
-    }
-  };
-
-  const toggleTheme = async () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    try {
-      await AsyncStorage.setItem(
-        THEME_STORAGE_KEY,
-        newTheme ? "dark" : "light"
-      );
-    } catch (error) {
-      console.error("Error saving theme:", error);
-    }
-  };
-
-  const setTheme = async (dark: boolean) => {
-    setIsDark(dark);
-    try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, dark ? "dark" : "light");
-    } catch (error) {
-      console.error("Error saving theme:", error);
-    }
-  };
-
-  const colors = isDark ? darkTheme : lightTheme;
-
   return (
-    <ThemeContext.Provider value={{ isDark, colors, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ isDark: true, colors: brandTheme }}>
       {children}
     </ThemeContext.Provider>
   );

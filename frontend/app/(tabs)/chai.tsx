@@ -1,409 +1,260 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Image,
-  ActivityIndicator,
+  ImageBackground,
   TouchableOpacity,
-  Alert,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import axios from "axios";
+import { useRouter } from "expo-router";
 import { useCartStore } from "../../store/cartStore";
-import { useTheme } from "../../theme/ThemeContext";
+import { useTheme, BRAND, FONTS } from "../../theme/ThemeContext";
+import { chaiAPI, ChaiItem } from "../../services/api";
+import { BrandButton, SectionHeading, formatPrice } from "../../components/ui";
+import { EmptyState } from "../../components/EmptyState";
+import { MenuItemSkeleton } from "../../components/Skeleton";
+import { useToast } from "../../components/Toast";
+import { SITE } from "../../data/siteContent";
 import { addToCartHaptic } from "../../utils/haptics";
 
-const BRAND_PURPLE = "#6B2C5F";
-const BRAND_GOLD = "#D4A84B";
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "";
-
-interface ChaiItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number | null;
-  image_url: string;
-  is_signature: boolean;
-  size_options: { size: string; price: number }[];
-}
+type Chai = ChaiItem & { type?: "hot" | "cold"; flavoured?: boolean };
 
 export default function ChaiScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { colors } = useTheme();
-  const [chaiItems, setChaiItems] = useState<ChaiItem[]>([]);
+  const { showToast } = useToast();
+  const [chaiItems, setChaiItems] = useState<Chai[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [failed, setFailed] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
-  useEffect(() => {
-    fetchChaiItems();
-  }, []);
-
-  const fetchChaiItems = async () => {
+  const fetchChai = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/chai`);
-      setChaiItems(response.data);
-    } catch (error) {
-      console.error("Error fetching chai items:", error);
+      const response = await chaiAPI.getAll();
+      setChaiItems(response.data as Chai[]);
+      setFailed(false);
+    } catch {
+      setFailed(true);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, []);
 
-  const handleAddToCart = (chai: ChaiItem, size: string = "Regular") => {
-    const selectedOption = chai.size_options.find((opt) => opt.size === size);
-    const price = selectedOption?.price || chai.price || 0;
+  useEffect(() => {
+    fetchChai();
+  }, [fetchChai]);
 
+  const addToBasket = (chai: Chai) => {
+    if (chai.price == null) return;
+    addToCartHaptic();
     addItem({
       item_id: chai.id,
-      name: `${chai.name} (${size})`,
-      price: price,
+      name: chai.name,
+      price: chai.price,
       quantity: 1,
       customizations: [],
       special_instructions: "",
       image_url: chai.image_url,
     });
-
-    Alert.alert("Added!", `${chai.name} (${size}) added to your cart!`);
+    showToast({ message: `${chai.name} added to your basket`, type: "success" });
   };
 
-  if (loading) {
-    return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { paddingTop: insets.top, backgroundColor: colors.background },
-        ]}
-      >
-        <ActivityIndicator size="large" color={BRAND_GOLD} />
-        <Text style={[styles.loadingText, { color: colors.text }]}>
-          Brewing...
-        </Text>
-      </View>
-    );
-  }
+  const signature = chaiItems.find((c) => c.is_signature);
+  const sections = [
+    { title: "Hot chai", script: "Brewed desi-style", items: chaiItems.filter((c) => !c.is_signature && c.type !== "cold" && !c.flavoured) },
+    { title: "Flavoured chai", script: "Sip on relish", items: chaiItems.filter((c) => c.flavoured && c.type !== "cold") },
+    { title: "Iced & frappés", script: "Chai, but chill", items: chaiItems.filter((c) => c.type === "cold") },
+  ].filter((s) => s.items.length > 0);
 
-  const signatureChai = chaiItems.find((item) => item.is_signature);
-  const otherChais = chaiItems.filter((item) => !item.is_signature);
+  const renderChai = (chai: Chai) => (
+    <View key={chai.id} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <Image source={{ uri: chai.image_url }} style={styles.cardImage} />
+      <View style={styles.cardBody}>
+        <Text style={[styles.cardName, { color: colors.text }]} numberOfLines={1}>
+          {chai.name}
+        </Text>
+        <Text style={[styles.cardDesc, { color: colors.textMuted }]} numberOfLines={2}>
+          {chai.description}
+        </Text>
+        <Text style={styles.cardPrice}>{chai.price != null ? formatPrice(chai.price) : "In store"}</Text>
+      </View>
+      {chai.price != null && (
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => addToBasket(chai)}
+          accessibilityLabel={`Add ${chai.name}`}
+        >
+          <Ionicons name="add" size={20} color="#FFF" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   return (
     <ScrollView
-      style={[
-        styles.container,
-        { paddingTop: insets.top, backgroundColor: colors.background },
-      ]}
+      style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
-    >
-      {/* Hero Section */}
-      <View style={styles.heroSection}>
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/18030044/pexels-photo-18030044.jpeg",
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchChai();
           }}
-          style={styles.heroImage}
-          resizeMode="cover"
+          tintColor={BRAND.gold}
         />
+      }
+    >
+      <ImageBackground source={{ uri: SITE.chaiHeroImage }} style={[styles.hero, { paddingTop: insets.top }]}>
         <View style={styles.heroOverlay}>
+          <Text style={styles.heroScript}>The essence of hospitality</Text>
           <Text style={styles.heroTitle}>Our Chais</Text>
-          <Text style={styles.heroSubtitle}>
-            The true essence of Pakistani hospitality and tradition
+          <Text style={styles.heroText}>
+            Carefully selected tea leaves, infused with cardamom and simmered to perfection.
           </Text>
         </View>
-      </View>
+      </ImageBackground>
 
-      {/* Signature Chai */}
-      {signatureChai && (
-        <View style={styles.signatureSection}>
-          <View style={styles.signatureBadge}>
-            <Ionicons name="star" size={16} color={BRAND_GOLD} />
-            <Text style={styles.signatureLabel}>SIGNATURE</Text>
-          </View>
-          <View
-            style={[styles.signatureCard, { backgroundColor: colors.surface }]}
-          >
-            <Image
-              source={{ uri: signatureChai.image_url }}
-              style={styles.signatureImage}
-              resizeMode="cover"
-            />
-            <View style={styles.signatureContent}>
-              <Text style={[styles.signatureName, { color: colors.text }]}>
-                {signatureChai.name}
-              </Text>
-              <Text
-                style={[
-                  styles.signatureDescription,
-                  { color: colors.textSecondary },
-                ]}
-              >
-                {signatureChai.description}
-              </Text>
-
-              {/* Size Options */}
-              <View style={styles.sizeOptions}>
-                {signatureChai.size_options.map((option) => (
-                  <TouchableOpacity
-                    key={option.size}
-                    style={[
-                      styles.sizeOption,
-                      {
-                        backgroundColor: colors.background,
-                        borderColor: colors.border,
-                      },
-                    ]}
-                    onPress={() => {
-                      addToCartHaptic();
-                      handleAddToCart(signatureChai, option.size);
-                    }}
-                  >
-                    <View style={styles.sizeInfo}>
-                      <Text style={[styles.sizeLabel, { color: colors.text }]}>
-                        {option.size}
-                      </Text>
-                      <Text style={styles.sizePrice}>
-                        £{option.price.toFixed(2)}
-                      </Text>
-                    </View>
-                    <View style={styles.addBtn}>
-                      <Ionicons name="add" size={16} color="#FFF" />
-                    </View>
-                  </TouchableOpacity>
-                ))}
+      {loading ? (
+        <View style={styles.padded}>
+          {[0, 1, 2, 3].map((i) => (
+            <MenuItemSkeleton key={i} />
+          ))}
+        </View>
+      ) : failed && chaiItems.length === 0 ? (
+        <EmptyState
+          icon="cafe-outline"
+          title="The kettle's off"
+          message="We couldn't load our chai menu. Check your connection and try again."
+          actionLabel="Try again"
+          onAction={() => {
+            setLoading(true);
+            fetchChai();
+          }}
+        />
+      ) : (
+        <>
+          {signature && (
+            <View style={styles.padded}>
+              <View style={styles.signatureTag}>
+                <Ionicons name="star" size={14} color={BRAND.purpleDeep} />
+                <Text style={styles.signatureTagText}>SIGNATURE</Text>
               </View>
-            </View>
-          </View>
-        </View>
-      )}
-
-      {/* About Karak Chai */}
-      <View style={styles.aboutSection}>
-        <View
-          style={[styles.quoteContainer, { backgroundColor: colors.surface }]}
-        >
-          <Ionicons name="cafe" size={32} color={BRAND_GOLD} />
-          <Text style={[styles.quoteText, { color: colors.textSecondary }]}>
-            "Prepared with carefully selected tea leaves, infused with cardamom,
-            and simmered to perfection - it's a bold and flavourful beverage
-            with a velvety texture and a warming spice."
-          </Text>
-        </View>
-      </View>
-
-      {/* Flavored Chais */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Flavored Chai
-          </Text>
-          <Text style={styles.sectionSubtitle}>Sip on Relish</Text>
-        </View>
-        <View style={styles.chaiGrid}>
-          {otherChais.map((chai) => (
-            <View
-              key={chai.id}
-              style={[styles.chaiCard, { backgroundColor: colors.surface }]}
-            >
-              <Image
-                source={{ uri: chai.image_url }}
-                style={styles.chaiImage}
-                resizeMode="cover"
-              />
-              <View style={styles.chaiContent}>
-                <Text style={[styles.chaiName, { color: colors.text }]}>
-                  {chai.name}
-                </Text>
-                <Text
-                  style={[styles.chaiDescription, { color: colors.textMuted }]}
-                  numberOfLines={2}
-                >
-                  {chai.description}
-                </Text>
-                <View style={styles.chaiFooter}>
-                  <Text style={styles.chaiPrice}>
-                    from £{chai.price?.toFixed(2)}
+              <View style={[styles.signature, { backgroundColor: colors.surface }]}>
+                <Image source={{ uri: signature.image_url }} style={styles.signatureImage} />
+                <View style={styles.signatureBody}>
+                  <Text style={styles.signatureName}>{signature.name}</Text>
+                  <Text style={[styles.signatureDesc, { color: colors.textSecondary }]}>
+                    {signature.description}
                   </Text>
-                  <View style={styles.sizeButtons}>
-                    {chai.size_options.slice(0, 2).map((option) => (
-                      <TouchableOpacity
-                        key={option.size}
-                        style={styles.smallSizeBtn}
-                        onPress={() => {
-                          addToCartHaptic();
-                          handleAddToCart(chai, option.size);
-                        }}
-                      >
-                        <Text style={styles.smallSizeText}>
-                          {option.size === "Regular" ? "R" : "L"}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  {signature.price != null && (
+                    <BrandButton
+                      title={`Add to basket · ${formatPrice(signature.price)}`}
+                      icon="bag-add"
+                      onPress={() => addToBasket(signature)}
+                    />
+                  )}
                 </View>
               </View>
             </View>
-          ))}
-        </View>
-      </View>
+          )}
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <View
-          style={[styles.footerContent, { backgroundColor: colors.surface }]}
-        >
-          <Ionicons name="heart" size={20} color={BRAND_GOLD} />
-          <Text style={[styles.footerText, { color: colors.textMuted }]}>
-            Whether you're seeking a comforting moment of solitude or a lively
-            chat with friends, our Karak Chai is the perfect companion.
+          {sections.map((section) => (
+            <View key={section.title} style={styles.padded}>
+              <SectionHeading script={section.script} title={section.title} />
+              {section.items.map(renderChai)}
+            </View>
+          ))}
+
+          <TouchableOpacity style={styles.cupBanner} onPress={() => router.push("/info/know-your-cup")}>
+            <Ionicons name="color-palette" size={30} color={BRAND.purpleDeep} />
+            <View style={styles.flex}>
+              <Text style={styles.cupTitle}>Know your cup</Text>
+              <Text style={styles.cupText}>
+                Every Naan Staap cup tells a story — from truck art to icons.
+              </Text>
+            </View>
+            <Ionicons name="arrow-forward" size={22} color={BRAND.purpleDeep} />
+          </TouchableOpacity>
+
+          <Text style={[styles.note, { color: colors.textMuted }]}>
+            Items marked &quot;In store&quot; are served at our cafés — ask our team for today&apos;s price.
           </Text>
-        </View>
-      </View>
+        </>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   container: { flex: 1 },
-  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  loadingText: { color: "#FFF", marginTop: 12, fontSize: 16 },
-  heroSection: { height: 220, position: "relative" },
-  heroImage: { width: "100%", height: "100%" },
+  hero: { minHeight: 280, justifyContent: "flex-end" },
   heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+    padding: 24,
+    paddingTop: 60,
+    backgroundColor: "rgba(58, 38, 64, 0.6)",
+    flexGrow: 1,
+    justifyContent: "flex-end",
   },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#FFF",
-    marginBottom: 8,
-  },
-  heroSubtitle: { fontSize: 14, color: BRAND_GOLD, textAlign: "center" },
-  signatureSection: { padding: 20, paddingTop: 24 },
-  signatureBadge: {
+  heroScript: { fontFamily: FONTS.script, fontSize: 28, color: BRAND.orange },
+  heroTitle: { fontSize: 38, fontWeight: "900", color: BRAND.gold, marginTop: -4 },
+  heroText: { color: "rgba(255,255,255,0.9)", fontSize: 14, lineHeight: 20, marginTop: 6 },
+  padded: { paddingHorizontal: 16, paddingTop: 24 },
+  signatureTag: {
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "flex-start",
     gap: 6,
-    marginBottom: 12,
+    backgroundColor: BRAND.gold,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  signatureLabel: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: BRAND_GOLD,
-    letterSpacing: 2,
-  },
-  signatureCard: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  signatureImage: { width: "100%", height: 180 },
-  signatureContent: { padding: 16 },
-  signatureName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFF",
-    marginBottom: 8,
-  },
-  signatureDescription: {
-    fontSize: 14,
-    color: "#AAA",
-    lineHeight: 22,
-    marginBottom: 16,
-  },
-  sizeOptions: { flexDirection: "row", gap: 12 },
-  sizeOption: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#0A0A0A",
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#333",
-  },
-  sizeInfo: {},
-  sizeLabel: { color: "#FFF", fontSize: 14, fontWeight: "600" },
-  sizePrice: {
-    color: BRAND_GOLD,
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 2,
-  },
+  signatureTagText: { color: BRAND.purpleDeep, fontSize: 11, fontWeight: "900", letterSpacing: 1.5 },
+  signature: { borderRadius: 22, overflow: "hidden" },
+  signatureImage: { width: "100%", height: 220 },
+  signatureBody: { padding: 18, gap: 10 },
+  signatureName: { fontSize: 26, fontWeight: "900", color: BRAND.gold },
+  signatureDesc: { fontSize: 14, lineHeight: 21, marginBottom: 6 },
+  card: { flexDirection: "row", borderRadius: 18, overflow: "hidden", marginBottom: 12 },
+  cardImage: { width: 96, height: 104 },
+  cardBody: { flex: 1, padding: 12, paddingRight: 52 },
+  cardName: { fontSize: 16, fontWeight: "800" },
+  cardDesc: { fontSize: 12, marginTop: 4, lineHeight: 17 },
+  cardPrice: { color: BRAND.gold, fontSize: 15, fontWeight: "900", marginTop: "auto" },
   addBtn: {
-    backgroundColor: BRAND_PURPLE,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    position: "absolute",
+    right: 12,
+    top: "50%",
+    marginTop: -17,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: BRAND.orange,
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
   },
-  aboutSection: { paddingHorizontal: 20, marginBottom: 8 },
-  quoteContainer: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 16,
-    padding: 20,
-    alignItems: "center",
-    borderLeftWidth: 4,
-    borderLeftColor: BRAND_GOLD,
-  },
-  quoteText: {
-    fontSize: 14,
-    color: "#AAA",
-    fontStyle: "italic",
-    lineHeight: 22,
-    textAlign: "center",
-    marginTop: 12,
-  },
-  section: { padding: 20 },
-  sectionHeader: { marginBottom: 16 },
-  sectionTitle: { fontSize: 22, fontWeight: "bold", color: "#FFF" },
-  sectionSubtitle: { fontSize: 14, color: BRAND_GOLD, marginTop: 4 },
-  chaiGrid: { gap: 12 },
-  chaiCard: {
+  cupBanner: {
     flexDirection: "row",
-    backgroundColor: "#1A1A1A",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  chaiImage: { width: 100, height: 110 },
-  chaiContent: { flex: 1, padding: 12, justifyContent: "space-between" },
-  chaiName: { fontSize: 16, fontWeight: "600", color: "#FFF", marginBottom: 4 },
-  chaiDescription: { fontSize: 12, color: "#888", lineHeight: 16 },
-  chaiFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
+    gap: 14,
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 18,
+    borderRadius: 20,
+    backgroundColor: BRAND.gold,
   },
-  chaiPrice: { fontSize: 14, fontWeight: "bold", color: BRAND_GOLD },
-  sizeButtons: { flexDirection: "row", gap: 8 },
-  smallSizeBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: BRAND_PURPLE,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  smallSizeText: { color: "#FFF", fontSize: 12, fontWeight: "bold" },
-  footer: { padding: 20, paddingBottom: 40 },
-  footerContent: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 16,
-    padding: 20,
-    alignItems: "center",
-  },
-  footerText: {
-    fontSize: 13,
-    color: "#888",
-    textAlign: "center",
-    lineHeight: 20,
-    marginTop: 12,
-  },
+  cupTitle: { fontSize: 18, fontWeight: "900", color: BRAND.purpleDeep },
+  cupText: { fontSize: 13, color: BRAND.purpleDeep, marginTop: 2 },
+  note: { fontSize: 12, textAlign: "center", padding: 24, paddingBottom: 40, lineHeight: 18 },
 });

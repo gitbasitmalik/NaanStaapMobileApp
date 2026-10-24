@@ -1,134 +1,143 @@
 import { create } from 'zustand';
-import { addressAPI, Address } from '../services/api';
+import api, { addressAPI, apiErrorMessage } from '../services/api';
+
+// Saved address as stored by the API (backend/server.js "SAVED ADDRESSES").
+// Note the API uses `address_line1` / `address_line2` (no underscore before the digit).
+export interface SavedAddress {
+  id: string;
+  label: string;
+  address_line1: string;
+  address_line2?: string | null;
+  city: string;
+  postcode: string;
+  country?: string;
+  is_default: boolean;
+  delivery_instructions?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+export type AddressInput = {
+  label: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  postcode: string;
+  is_default?: boolean;
+  delivery_instructions?: string;
+};
+
+/** One-line summary, e.g. for checkout. */
+export const formatAddress = (a: Pick<SavedAddress, 'address_line1' | 'address_line2' | 'city' | 'postcode'>) =>
+  [a.address_line1, a.address_line2, a.city, a.postcode].filter(Boolean).join(', ');
+
+// UK postcode (incl. GIR 0AA); spaces optional.
+const UK_POSTCODE = /^(GIR ?0AA|[A-PR-UWYZ][A-HK-Y]?\d[A-Z\d]? ?\d[ABD-HJLNP-UW-Z]{2})$/i;
+
+export const isValidUkPostcode = (value: string) => UK_POSTCODE.test(value.trim());
+
+/** "sw1a1aa" -> "SW1A 1AA" */
+export const normalisePostcode = (value: string) => {
+  const compact = value.replace(/\s+/g, '').toUpperCase();
+  if (compact.length < 5) return compact;
+  return `${compact.slice(0, -3)} ${compact.slice(-3)}`;
+};
+
+type Result = { ok: boolean; error?: string };
 
 interface AddressState {
-  addresses: Address[];
-  selectedAddress: Address | null;
+  addresses: SavedAddress[];
+  selectedAddress: SavedAddress | null;
   isLoading: boolean;
+  hasLoaded: boolean;
   error: string | null;
 
-  // Actions
-  fetchAddresses: () => Promise<void>;
-  addAddress: (address: Omit<Address, 'id'>) => Promise<boolean>;
-  updateAddress: (addressId: string, address: Partial<Address>) => Promise<boolean>;
-  deleteAddress: (addressId: string) => Promise<boolean>;
-  setDefaultAddress: (addressId: string) => Promise<boolean>;
+  fetchAddresses: () => Promise<boolean>;
+  addAddress: (address: AddressInput) => Promise<Result>;
+  updateAddress: (addressId: string, address: Partial<AddressInput>) => Promise<Result>;
+  deleteAddress: (addressId: string) => Promise<Result>;
+  setDefaultAddress: (addressId: string) => Promise<Result>;
   selectAddress: (addressId: string) => void;
-  getDefaultAddress: () => Address | null;
+  getDefaultAddress: () => SavedAddress | null;
   clearError: () => void;
 }
+
+const pickSelected = (addresses: SavedAddress[], current: SavedAddress | null) =>
+  (current && addresses.find((a) => a.id === current.id)) ||
+  addresses.find((a) => a.is_default) ||
+  addresses[0] ||
+  null;
 
 export const useAddressStore = create<AddressState>((set, get) => ({
   addresses: [],
   selectedAddress: null,
   isLoading: false,
+  hasLoaded: false,
   error: null,
 
   fetchAddresses: async () => {
     set({ isLoading: true, error: null });
     try {
       const response = await addressAPI.getAll();
-      const addresses = response.data;
-      const defaultAddress = addresses.find((a: Address) => a.is_default) || addresses[0] || null;
-      set({ 
-        addresses, 
-        selectedAddress: get().selectedAddress || defaultAddress,
-        isLoading: false 
-      });
-    } catch (error: any) {
+      const addresses = ((response.data as unknown as SavedAddress[]) || []).slice();
+      set((state) => ({
+        addresses,
+        selectedAddress: pickSelected(addresses, state.selectedAddress),
+        isLoading: false,
+        hasLoaded: true,
+      }));
+      return true;
+    } catch (error) {
       set({
         isLoading: false,
-        error: error.response?.data?.detail || 'Failed to fetch addresses',
+        hasLoaded: true,
+        error: apiErrorMessage(error, "We couldn't load your addresses."),
       });
+      return false;
     }
   },
 
   addAddress: async (address) => {
-    set({ isLoading: true, error: null });
     try {
-      const response = await addressAPI.create(address);
-      const newAddress = response.data.address || response.data;
-      set((state) => ({
-        addresses: [...state.addresses, newAddress],
-        selectedAddress: address.is_default ? newAddress : state.selectedAddress,
-        isLoading: false,
-      }));
-      return true;
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to add address',
-      });
-      return false;
+      await api.post('/api/addresses', address);
+      await get().fetchAddresses();
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: apiErrorMessage(error, "We couldn't save that address.") };
     }
   },
 
   updateAddress: async (addressId, address) => {
-    set({ isLoading: true, error: null });
     try {
-      const response = await addressAPI.update(addressId, address);
-      const updatedAddress = response.data.address || response.data;
-      set((state) => ({
-        addresses: state.addresses.map((a) =>
-          a.id === addressId ? { ...a, ...updatedAddress } : a
-        ),
-        selectedAddress: state.selectedAddress?.id === addressId 
-          ? { ...state.selectedAddress, ...updatedAddress }
-          : state.selectedAddress,
-        isLoading: false,
-      }));
-      return true;
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to update address',
-      });
-      return false;
+      await api.put(`/api/addresses/${addressId}`, address);
+      await get().fetchAddresses();
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: apiErrorMessage(error, "We couldn't update that address.") };
     }
   },
 
   deleteAddress: async (addressId) => {
-    set({ isLoading: true, error: null });
     try {
       await addressAPI.delete(addressId);
-      set((state) => {
-        const newAddresses = state.addresses.filter((a) => a.id !== addressId);
-        return {
-          addresses: newAddresses,
-          selectedAddress: state.selectedAddress?.id === addressId 
-            ? newAddresses.find((a) => a.is_default) || newAddresses[0] || null
-            : state.selectedAddress,
-          isLoading: false,
-        };
-      });
-      return true;
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to delete address',
-      });
-      return false;
+      await get().fetchAddresses();
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: apiErrorMessage(error, "We couldn't delete that address.") };
     }
   },
 
   setDefaultAddress: async (addressId) => {
-    set({ isLoading: true, error: null });
     try {
       await addressAPI.setDefault(addressId);
       set((state) => ({
-        addresses: state.addresses.map((a) => ({
-          ...a,
-          is_default: a.id === addressId,
-        })),
-        isLoading: false,
+        addresses: state.addresses
+          .map((a) => ({ ...a, is_default: a.id === addressId }))
+          .sort((a, b) => Number(b.is_default) - Number(a.is_default)),
       }));
-      return true;
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.detail || 'Failed to set default address',
-      });
-      return false;
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: apiErrorMessage(error, "We couldn't change your default address.") };
     }
   },
 
@@ -137,9 +146,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
     set({ selectedAddress: address || null });
   },
 
-  getDefaultAddress: () => {
-    return get().addresses.find((a) => a.is_default) || get().addresses[0] || null;
-  },
+  getDefaultAddress: () => get().addresses.find((a) => a.is_default) || get().addresses[0] || null,
 
   clearError: () => set({ error: null }),
 }));
