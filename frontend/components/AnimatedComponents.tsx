@@ -115,7 +115,7 @@ export function AnimatedButton({
       <Animated.View
         style={[
           innerStyle,
-          width != null || flex != null || flexGrow != null ? { width: "100%" } : null,
+          width != null || flex != null ? { width: "100%" } : null,
           { transform: [{ scale: scaleAnim }] },
         ]}
       >

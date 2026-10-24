@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   headerAccount: { padding: 4 },
   heroWrap: { paddingHorizontal: 16, marginTop: 16 },
-  hero: { height: 300, justifyContent: "flex-end" },
+  hero: { minHeight: 320, justifyContent: "flex-end" },
   heroImage: { borderRadius: 24 },
   heroOverlay: {
     flex: 1,
@@ -361,8 +361,8 @@ const styles = StyleSheet.create({
   heroScript: { fontFamily: FONTS.script, fontSize: 28, color: BRAND.orange },
   heroTitle: { fontSize: 34, lineHeight: 38, fontWeight: "900", color: BRAND.gold },
   heroText: { color: "rgba(255,255,255,0.9)", fontSize: 14, lineHeight: 20, marginTop: 8 },
-  heroButtons: { flexDirection: "row", gap: 10, marginTop: 16 },
-  heroBtn: { flexGrow: 1, paddingHorizontal: 12 },
+  heroButtons: { gap: 10, marginTop: 18 },
+  heroBtn: { alignSelf: "stretch" },
   offline: {
     flexDirection: "row",
     alignItems: "center",

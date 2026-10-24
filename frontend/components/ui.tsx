@@ -91,7 +91,12 @@ export function BrandButton({
       ) : (
         <>
           {icon && <Ionicons name={icon} size={size === "sm" ? 16 : 20} color={fg} />}
-          <Text style={[styles.buttonText, size === "sm" && styles.buttonTextSm, { color: fg }]}>
+          <Text
+            style={[styles.buttonText, size === "sm" && styles.buttonTextSm, { color: fg, flexShrink: 1 }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.8}
+          >
             {title}
           </Text>
         </>
