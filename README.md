@@ -42,6 +42,23 @@ npx expo start              # press i (iOS), a (Android) or w (web)
 
 On a real phone, set `EXPO_PUBLIC_BACKEND_URL` to your computer's LAN IP (for example `http://192.168.1.50:8005`), not `localhost`.
 
+### Install on your own iPhone (free Apple ID)
+
+With the iPhone plugged in and **Developer Mode** on (Settings → Privacy & Security), run from `frontend/`:
+
+```bash
+APPLE_TEAM_ID=YOURTEAMID IOS_BUNDLE_ID=com.yourname.naanstaap DEVICE_ID=YOUR-IPHONE-UDID ./scripts/install-iphone.sh
+```
+
+- **Find the values:** `xcrun devicectl list devices` lists the device ID. Your team ID is in Xcode → Settings → Accounts.
+- **First install only:** on the phone, trust the developer under Settings → General → VPN & Device Management.
+- **Free Apple IDs expire after 7 days:** the app stops opening, so rerun the script before day 7. Your account and orders are kept on the server.
+- **Which server the app uses:** the one in `frontend/.env` (`EXPO_PUBLIC_BACKEND_URL`), baked in at build time.
+
+### Cloud API (Render + MongoDB Atlas)
+
+`render.yaml` deploys `backend/` to Render's free plan; set `MONGO_URL` to your Atlas connection string when prompted. The free plan sleeps after 15 minutes idle, so the first request after a pause can take ~50 seconds.
+
 **Demo account (local test data only):** `demo@naanstaap.test` / `DemoPass123`. Register it on a fresh database if it isn't there.
 
 ## Updating content
