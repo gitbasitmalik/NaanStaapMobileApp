@@ -1,0 +1,34 @@
+# Render Blueprint for the Naan Staap API (https://render.com/docs/blueprint-spec).
+# In Render: New > Blueprint > pick this repo. You'll be asked for MONGO_URL
+# (MongoDB Atlas connection string); the secrets below are generated for you.
+services:
+  - type: web
+    name: naanstaap-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: naanstaap
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: STAFF_API_KEY
+        generateValue: true
+      # Trial settings: orders move through statuses on their own and can be
+      # placed outside opening hours. Set both to "false" for the real launch.
+      - key: DEMO_AUTO_PROGRESS
+        value: "true"
+      - key: ALLOW_ORDERS_WHEN_CLOSED
+        value: "true"
